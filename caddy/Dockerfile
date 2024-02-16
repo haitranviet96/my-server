@@ -1,7 +1,8 @@
 FROM caddy:builder AS builder
  
-RUN xcaddy build \
---with github.com/caddy-dns/cloudflare
+RUN --mount=type=cache,target=/go/pkg,sharing=locked \
+    xcaddy build \
+    --with github.com/caddy-dns/cloudflare
  
 FROM caddy:latest
  
