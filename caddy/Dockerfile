@@ -1,7 +1,6 @@
 FROM caddy:builder AS builder
  
-RUN --mount=type=cache,target=/go/pkg,sharing=locked \
-    xcaddy build \
+RUN xcaddy build \
     --with github.com/mholt/caddy-dynamicdns
  
 FROM caddy:latest
