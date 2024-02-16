@@ -77,3 +77,8 @@ sudo docker run hello-world
 
 ## 4. Disable SELinux
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-enabling_and_disabling_selinux-disabling_selinux
+
+## 5. Install other applications
+```
+sudo dnf install git
+```
