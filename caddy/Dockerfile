@@ -2,7 +2,7 @@ FROM caddy:builder AS builder
  
 RUN --mount=type=cache,target=/go/pkg,sharing=locked \
     xcaddy build \
-    --with github.com/caddy-dns/cloudflare
+    --with github.com/mholt/caddy-dynamicdns
  
 FROM caddy:latest
  
