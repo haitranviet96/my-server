@@ -10,7 +10,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./site:/srv
       - caddy_data:/data
-      - caddy_config:/config
+      - caddy_config:/home/haitv/my-server/caddy
 
 volumes:
   caddy_data:
