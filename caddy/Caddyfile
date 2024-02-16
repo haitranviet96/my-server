@@ -7,6 +7,10 @@
 	}
 }
 
-haivita.com {
-    file_server
+https://haivita.com {
+	respond "Hello, world!"
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+		resolvers 1.1.1.1
+	}
 }
