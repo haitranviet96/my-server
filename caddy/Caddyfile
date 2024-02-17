@@ -7,7 +7,7 @@
 	}
 }
 
-https://haivita.com {
+*.haivita.com {
 	respond "Hello, world!"
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
