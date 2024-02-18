@@ -16,11 +16,17 @@ haivita.com {
 	}
 }
 
-cloud.haivita.com {
-	respond "Hello, world!"
-
+*.haivita.com {
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 		resolvers 1.1.1.1
 	}
+}
+
+cloud.haivita.com {
+	respond "Hello, world!"
+}
+
+cockpit.haivita.com {
+	reverse_proxy 127.0.0.1:9090
 }
