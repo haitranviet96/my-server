@@ -5,22 +5,12 @@
 			haivita.com
 		}
 	}
+
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 haivita.com {
 	respond "Hello, world!"
-
-	tls {
-		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-		resolvers 1.1.1.1
-	}
-}
-
-*.haivita.com {
-	tls {
-		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-		resolvers 1.1.1.1
-	}
 }
 
 cloud.haivita.com {
@@ -28,5 +18,5 @@ cloud.haivita.com {
 }
 
 cockpit.haivita.com {
-	reverse_proxy 127.0.0.1:9090
+	reverse_proxy host.docker.internal:9090
 }
