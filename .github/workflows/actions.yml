@@ -31,6 +31,6 @@ jobs:
       
       - name: SOPS
         run: |
-          sops -d caddy/caddy.env
+          sops -d -i -- caddy/caddy.env
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
