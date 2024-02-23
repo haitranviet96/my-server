@@ -18,5 +18,5 @@ cloud.haivita.com {
 }
 
 cockpit.haivita.com {
-	reverse_proxy host.docker.internal:9090
+	reverse_proxy http://host.docker.internal:9090
 }
