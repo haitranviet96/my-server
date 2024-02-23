@@ -6,29 +6,12 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
-    secrets:
-      - mysecrets
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./caddy/site:/srv
       - caddy_data:/data
       - caddy_config:/home/haitv/my-server/caddy
-  
-  sops:
-    image: mozilla/sops:latest
-    command: ["sops", "--config", ".sops.yaml", "--decrypt", "/caddy.env"]
-    volumes:
-      - ./caddy/.env:caddy.env
-      - ./.sops.yaml:.sops.yaml
-      - /gpg:/gpg
-    environment:
-      # Optional: specify the path to your PGP private key if you encrypted the file with PGP
-      SOPS_PGP_PRIVATE_KEY: /gpg/private.key
 
 volumes:
   caddy_data:
   caddy_config:
-
-secrets:
-  mysecrets:
-    external: true
