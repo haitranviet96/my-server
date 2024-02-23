@@ -13,6 +13,8 @@ services:
       - ./caddy/site:/srv
       - caddy_data:/data
       - caddy_config:/home/haitv/my-server/caddy
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
 
 volumes:
   caddy_data:
