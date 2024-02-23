@@ -33,4 +33,11 @@ jobs:
         run: |
           sops -d -i -- caddy/caddy.env
 
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
       - run: echo "🍏 This job's status is ${{ job.status }}."
