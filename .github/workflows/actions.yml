@@ -21,10 +21,6 @@ jobs:
         run: |
           ls ${{ github.workspace }}
 
-      - name: Sops Binary Installer
-        uses: mdgreenwald/mozilla-sops-action@v1.5.0
-        id: install-sops
-
       - name: Configure GPG Key
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -34,6 +30,7 @@ jobs:
 
       - name: SOPS
         run: |
+          sudo apt update && sudo apt install sops
           sops -d -i -- caddy/caddy.env
 
       - name: Tailscale
