@@ -29,6 +29,10 @@ sonarr.haivita.com {
 	reverse_proxy sonarr:8989
 }
 
+bazarr.haivita.com {
+	reverse_proxy bazarr:6767
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login
