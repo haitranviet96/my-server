@@ -15,6 +15,15 @@ services:
       - caddy_config:/home/haitv/my-server/caddy
     extra_hosts:
     - "host.docker.internal:host-gateway"
+  
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    network_mode: 'host'
+    volumes:
+      - ./jellyfin/config:/config
+      - /media/Data/media:/media
+    restart: 'unless-stopped'
 
 volumes:
   caddy_data:
