@@ -19,7 +19,7 @@ cloud.haivita.com {
 
 cockpit.haivita.com {
 	@auth {
-		not path /login
+		not path /cockpit/login
 	}
 
 	basicauth @auth {
