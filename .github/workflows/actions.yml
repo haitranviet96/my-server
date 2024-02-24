@@ -28,14 +28,12 @@ jobs:
           echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
           gpg --list-secret-keys
 
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
+
       - name: SOPS
         shell: bash {0}
         run: |
-          SOPS_LATEST_VERSION=$(curl -s "https://api.github.com/repos/mozilla/sops/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
-          curl -Lo sops.deb "https://github.com/mozilla/sops/releases/latest/download/sops_${SOPS_LATEST_VERSION}_amd64.deb"
-          sudo apt --fix-broken install ./sops.deb
-          rm -rf sops.deb
-          sops -version
           sops -d -i -- caddy/caddy.env
 
       - name: Tailscale
@@ -47,6 +45,7 @@ jobs:
 
       - name: Add SSH key
         id: ssh
+        shell: bash {0}
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
@@ -58,6 +57,7 @@ jobs:
 
       - name: Copy and Deploy
         id: deploy
+        shell: bash {0}
         run: |
           TIME=$(date +%Y%m%d-%H%M%S)
           MACHINE_IP="$(tailscale ip -6 $MACHINE)"
