@@ -21,6 +21,10 @@ jellyfin.haivita.com {
 	reverse_proxy host.docker.internal:8096
 }
 
+radarr.haivita.com {
+	reverse_proxy radarr:7878
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login

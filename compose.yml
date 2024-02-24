@@ -23,8 +23,20 @@ services:
     network_mode: 'host'
     volumes:
       - /config/jellyfin:/config
-      - /media/Data/media:/media
+      - /media/Data/media-data/media:/media
     restart: 'unless-stopped'
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - /config/radarr:/config
+      - /media/Data/media-data:/data
+    restart: unless-stopped
 
 volumes:
   caddy_data:
