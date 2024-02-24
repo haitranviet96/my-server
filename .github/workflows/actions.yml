@@ -64,5 +64,3 @@ jobs:
           ssh -i ~/.ssh/key "haitv@$MACHINE_IP" "rm -rf ~/my-server;"
           GLOBIGNORE=".git:.github:README.md" scp -i ~/.ssh/key -r ${{ github.workspace }} "haitv@[$MACHINE_IP]://home/haitv/"
           ssh -i ~/.ssh/key "haitv@$MACHINE_IP" "cd ~/my-server;docker compose down;docker compose up -d;"
-
-      - run: echo "🍏 This job's status is ${{ job.status }}."
