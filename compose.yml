@@ -38,6 +38,18 @@ services:
       - /media/Data/media-data:/data
     restart: unless-stopped
 
+  nzbget:
+    image: lscr.io/linuxserver/nzbget:latest
+    container_name: nzbget
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - /config/nzbget:/config
+      - /media/Data/media-data/usenet:/downloads
+    restart: unless-stopped
+
 volumes:
   caddy_data:
   caddy_config:
