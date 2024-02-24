@@ -29,6 +29,7 @@ jobs:
           gpg --list-secret-keys
 
       - name: SOPS
+        shell: bash {0}
         run: |
           SOPS_LATEST_VERSION=$(curl -s "https://api.github.com/repos/mozilla/sops/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
           curl -Lo sops.deb "https://github.com/mozilla/sops/releases/latest/download/sops_${SOPS_LATEST_VERSION}_amd64.deb"
