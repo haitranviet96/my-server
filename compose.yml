@@ -19,10 +19,10 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     container_name: jellyfin
-    user: 1000:0
+    user: 1000:1000
     network_mode: 'host'
     volumes:
-      - /config:/config
+      - /config/jellyfin:/config
       - /media/Data/media:/media
     restart: 'unless-stopped'
 
