@@ -18,6 +18,10 @@ cloud.haivita.com {
 }
 
 cockpit.haivita.com {
+	basicauth {
+		{env.caddyfile_auth_user} {env.caddyfile_auth_pass}
+	}
+
 	reverse_proxy https://host.docker.internal:9090 {
 		transport http {
 			tls_insecure_skip_verify
