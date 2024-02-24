@@ -37,6 +37,8 @@ services:
       - /config/radarr:/config
       - /media/Data/media-data:/data
     restart: unless-stopped
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
 
   nzbget:
     image: lscr.io/linuxserver/nzbget:latest
