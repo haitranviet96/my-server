@@ -22,7 +22,7 @@ services:
     user: 1000:0
     network_mode: 'host'
     volumes:
-      - ./jellyfin/config:/config
+      - /config:/config
       - /media/Data/media:/media
     restart: 'unless-stopped'
 
