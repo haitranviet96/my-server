@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      
+
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
@@ -30,8 +30,8 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
-          gpg --list-secret-keys 
-      
+          gpg --list-secret-keys
+
       - name: SOPS
         run: |
           sops -d -i -- caddy/caddy.env
@@ -43,16 +43,13 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Add SSH key
-        id: ssh
-        env:
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          MACHINE_IP="$(tailscale ip -6 $MACHINE)"
-          ssh-keyscan $MACHINE_IP >> ~/.ssh/known_hosts
-          printf "%s" "$SSH_KEY" > ~/.ssh/key
-          chmod 600 ~/.ssh/key
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ MACHINE }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: whoami
 
       - name: Copy and Deploy
         id: deploy
