@@ -17,6 +17,10 @@ cloud.haivita.com {
 	respond "Hello, world!"
 }
 
+jellyfin.haivita.com {
+	reverse_proxy 127.0.0.1:8096
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login
