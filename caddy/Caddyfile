@@ -18,7 +18,7 @@ cloud.haivita.com {
 }
 
 jellyfin.haivita.com {
-	reverse_proxy 127.0.0.1:8096
+	reverse_proxy host.docker.internal:8096
 }
 
 cockpit.haivita.com {
