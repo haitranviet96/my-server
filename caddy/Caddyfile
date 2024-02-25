@@ -33,6 +33,10 @@ bazarr.haivita.com {
 	reverse_proxy bazarr:6767
 }
 
+nzbget.haivita.com {
+	reverse_proxy nzbget:6789
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login

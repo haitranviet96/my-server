@@ -78,6 +78,8 @@ services:
     volumes:
       - /config/nzbget:/config
       - /media/Data/media-data/usenet:/downloads
+    ports:
+      - 6789:6789
     restart: unless-stopped
 
 volumes:
