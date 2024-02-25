@@ -33,8 +33,12 @@ bazarr.haivita.com {
 	reverse_proxy bazarr:6767
 }
 
-nzbget.haivita.com {
-	reverse_proxy nzbget:6789
+prowlarr.haivita.com {
+	reverse_proxy prowlarr:9696
+}
+
+transmission.haivita.com {
+	reverse_proxy transmission:9091
 }
 
 cockpit.haivita.com {
