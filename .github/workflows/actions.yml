@@ -35,6 +35,7 @@ jobs:
         shell: bash {0}
         run: |
           sops -d -i -- caddy/caddy.env
+          sops -d -i -- nzbget/nzbget.env
 
       - name: Tailscale
         uses: tailscale/github-action@v2
