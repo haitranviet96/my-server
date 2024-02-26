@@ -79,7 +79,7 @@ services:
       - transmission/transmission.env
     volumes:
       - /config/transmission:/config
-      - /media/Data/media-data/torrents:/downloads
+      - /media/Data/media-data/torrents:/data/torrents
     ports:
       - 9091:9091
       - 51413:51413
