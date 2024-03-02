@@ -21,14 +21,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Checkout & prepare
-        uses: ./.github/workflows/base-workflow
+        uses: ./.github/actions/base-workflow
         with:
           serviceName: $SERVICE_NAME
 
       - name: Setup & encode SOPS
-        uses: ./.github/workflows/sops-decode.yml
+        uses: ./.github/actions/sops-decode
         with:
           fileName: ${{ env.SERVICE_NAME }}.env
       
       - name: SSH & Deploy
-        uses: ./.github/workflows/ssh-deploy.yml
+        uses: ./.github/actions/ssh-deploy
