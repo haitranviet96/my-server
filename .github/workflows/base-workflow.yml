@@ -13,7 +13,7 @@ env:
   MACHINE: daimo-dc
 
 jobs:
-  deploy:
+  prepare:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
