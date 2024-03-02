@@ -3,9 +3,11 @@ name: Deploy to My Server
 run-name: ${{ github.actor }} is deploying to My Server 🚀
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      serviceName:
+        description: 'The name of the service'
+        required: true
 
 env:
   MACHINE: daimo-dc
@@ -19,23 +21,13 @@ jobs:
 
       - name: List files in the repository
         run: |
+          cd services/${{ inputs.serviceName | tr '[:lower:]' }}
           ls ${{ github.workspace }}
 
-      - name: Configure GPG Key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        run: |
-          echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
-          gpg --list-secret-keys
-
-      - name: Setup SOPS
-        uses: nhedger/setup-sops@v2
-
-      - name: SOPS
-        shell: bash {0}
-        run: |
-          sops -d -i -- caddy/caddy.env
-          sops -d -i -- transmission/transmission.env
+      - name: Setup & encode SOPS
+        uses: .github/workflows/sops-decode.yml
+        with:
+          fileName: ${{ inputs.serviceName | tr '[:lower:]' }}.env
 
       - name: Tailscale
         uses: tailscale/github-action@v2

@@ -1,0 +1,22 @@
+env:
+  SERVICE_NAME: Caddy
+
+name: Deploy $SERVICE_NAME to My Server
+
+run-name: ${{ github.actor }} is deploying to My Server 🚀
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/$SERVICE_NAME
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push & Deploy to Server
+        uses: .github/workflows/base-workflow.yml
+        with:
+          serviceName: $SERVICE_NAME
