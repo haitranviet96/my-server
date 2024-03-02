@@ -1,22 +1,30 @@
 env:
   SERVICE_NAME: Caddy
 
-name: Deploy $SERVICE_NAME to My Server
+name: Deploy Caddy to My Server
 
 run-name: ${{ github.actor }} is deploying to My Server 🚀
 
-# on:
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - services/$SERVICE_NAME
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/$SERVICE_NAME
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Push & Deploy to Server
+      - name: Checkout & prepare
         uses: .github/workflows/base-workflow.yml
         with:
           serviceName: $SERVICE_NAME
+
+      - name: Setup & encode SOPS
+        uses: .github/workflows/sops-decode.yml
+        with:
+          fileName: ${{ $SERVICE_NAME | tr '[:lower:]' }}.env
+      
+      - name: SSH & Deploy
+        uses: .github/workflows/ssh-deploy.yml
