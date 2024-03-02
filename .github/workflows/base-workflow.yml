@@ -1,7 +1,5 @@
 name: Checkout and prepare
 
-run-name: ${{ github.actor }} is deploying to My Server 🚀
-
 on:
   workflow_call:
     inputs:
@@ -12,21 +10,20 @@ on:
 env:
   MACHINE: daimo-dc
 
-jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
+run:
+  using: 'composite'
+  steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
 
-      - name: List files in the repository
-        run: |
-          cd services/${{ inputs.serviceName }}
-          ls ${{ github.workspace }}
+    - name: List files in the repository
+      run: |
+        cd services/${{ inputs.serviceName }}
+        ls ${{ github.workspace }}
 
-      - name: Tailscale
-        uses: tailscale/github-action@v2
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
+    - name: Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        tags: tag:ci
