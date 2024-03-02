@@ -24,10 +24,10 @@ jobs:
           cd services/${{ inputs.serviceName | tr '[:lower:]' }}
           ls ${{ github.workspace }}
 
-      - name: Setup & encode SOPS
-        uses: .github/workflows/sops-decode.yml
-        with:
-          fileName: ${{ inputs.serviceName | tr '[:lower:]' }}.env
+      # - name: Setup & encode SOPS
+      #   uses: .github/workflows/sops-decode.yml
+      #   with:
+      #     fileName: ${{ inputs.serviceName | tr '[:lower:]' }}.env
 
       - name: Tailscale
         uses: tailscale/github-action@v2
