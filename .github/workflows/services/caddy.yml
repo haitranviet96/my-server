@@ -5,12 +5,12 @@ name: Deploy $SERVICE_NAME to My Server
 
 run-name: ${{ github.actor }} is deploying to My Server 🚀
 
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - services/$SERVICE_NAME
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - services/$SERVICE_NAME
 
 jobs:
   deploy:
