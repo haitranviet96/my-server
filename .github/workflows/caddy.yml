@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout & prepare
-        uses: .github/workflows/base-workflow.yml
+        uses: ./.github/workflows/base-workflow.yml
         with:
           serviceName: $SERVICE_NAME
 
       - name: Setup & encode SOPS
-        uses: .github/workflows/sops-decode.yml
+        uses: ./.github/workflows/sops-decode.yml
         with:
           fileName: ${{ $SERVICE_NAME | tr '[:lower:]' }}.env
       
