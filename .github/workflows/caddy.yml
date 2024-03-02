@@ -27,4 +27,4 @@ jobs:
           fileName: ${{ $SERVICE_NAME | tr '[:lower:]' }}.env
       
       - name: SSH & Deploy
-        uses: .github/workflows/ssh-deploy.yml
+        uses: ./.github/workflows/ssh-deploy.yml
