@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Checkout & prepare
-        uses: ./.github/actions/base-workflow
+        uses: ./.github/actions/base-action
         with:
           serviceName: $SERVICE_NAME
 
