@@ -15,8 +15,10 @@ run:
       uses: actions/checkout@v4
 
     - name: List files in the repository
+      env:
+        serviceName: ${{ inputs.serviceName }}
       run: |
-        cd services/${{ inputs.serviceName }}
+        cd services/$serviceName
         ls ${{ github.workspace }}
 
     - name: Tailscale
