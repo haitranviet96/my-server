@@ -12,6 +12,8 @@ run:
   using: 'composite'
   steps:
     - name: List files in the repository
+      env:
+        service_name: ${{ inputs.service_name }}
       run: |
         cd services/${{ inputs.service_name }}
         ls ${{ github.workspace }}
