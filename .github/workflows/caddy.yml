@@ -1,7 +1,7 @@
 env:
   SERVICE_NAME: caddy
 
-name: Deploy ${{ $SERVICE_NAME }} to My Server
+name: Deploy Caddy to My Server
 
 run-name: ${{ github.actor }} is deploying to My Server 🚀
 
@@ -25,7 +25,7 @@ jobs:
       - name: Setup & encode SOPS
         uses: ./.github/workflows/sops-decode.yml
         with:
-          fileName: ${{ $SERVICE_NAME }}.env
+          fileName: ${{ SERVICE_NAME }}.env
       
       - name: SSH & Deploy
         uses: ./.github/workflows/ssh-deploy.yml
