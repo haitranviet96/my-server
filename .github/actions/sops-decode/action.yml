@@ -1,12 +1,11 @@
 name: Decode Environment files by SOPS 
 
-on:
-  workflow_call:
-    inputs:
-      fileName:
-        description: 'The name of the encoded file'
-        required: true
-        default: '.env'
+inputs:
+  fileName:
+    description: 'The name of the encoded file'
+    required: true
+    default: '.env'
+
 run:
   using: 'composite'
   steps:

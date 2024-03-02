@@ -1,11 +1,9 @@
 name: Checkout and prepare
 
-on:
-  workflow_call:
-    inputs:
-      serviceName:
-        description: 'The name of the service'
-        required: true
+inputs:
+  serviceName:
+    description: 'The name of the service'
+    required: true
 
 env:
   MACHINE: daimo-dc

@@ -1,8 +1,5 @@
 name: SSH Deploy to My Server
 
-on:
-  workflow_call:
-
 run:
   using: 'composite'
   steps:
