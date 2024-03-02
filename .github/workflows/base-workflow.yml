@@ -21,7 +21,7 @@ jobs:
 
       - name: List files in the repository
         run: |
-          cd services/${{ inputs.serviceName | tr '[:lower:]' }}
+          cd services/${{ inputs.serviceName }}
           ls ${{ github.workspace }}
 
       - name: Tailscale
