@@ -1,7 +1,7 @@
 name: Checkout and prepare
 
 inputs:
-  serviceName:
+  service_name:
     description: 'The name of the service'
     required: true
 
@@ -11,14 +11,9 @@ env:
 run:
   using: 'composite'
   steps:
-    - name: Check out repository code
-      uses: actions/checkout@v4
-
     - name: List files in the repository
-      env:
-        serviceName: ${{ inputs.serviceName }}
       run: |
-        cd services/$serviceName
+        cd services/${{ inputs.service_name }}
         ls ${{ github.workspace }}
 
     - name: Tailscale
