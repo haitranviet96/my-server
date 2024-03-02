@@ -24,7 +24,7 @@ jobs:
       - name: Checkout & prepare
         uses: ./.github/actions/base-action
         with:
-          serviceName: $SERVICE_NAME
+          serviceName: ${{ env.SERVICE_NAME }}
 
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
