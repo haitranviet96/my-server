@@ -12,6 +12,7 @@ on:
     paths:
       - services/$SERVICE_NAME/**
       - .github/workflows/**
+      - .github/actions/**
 
 jobs:
   deploy:
