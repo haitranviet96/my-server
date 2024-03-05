@@ -8,8 +8,8 @@ inputs:
 env:
   MACHINE: daimo-dc
 
-run:
-  using: 'composite'
+runs:
+  using: "composite"
   steps:
     - name: List files in the repository
       env:
