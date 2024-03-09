@@ -24,4 +24,5 @@ runs:
     - name: SOPS
       shell: bash {0}
       run: |
-        sops -d -i -- ${{ inputs.fileName }}
+        sh -c "echo 'Hello, host!' && whoami"
+        sh -c "sops -d -i -- $${{ inputs.fileName }}"
