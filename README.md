@@ -82,3 +82,8 @@ https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/se
 ```
 sudo dnf install git
 ```
+
+## 6. Install GitHub Self-hosted Runner
+
+- Get runner: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners
+- Setup services: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service
