@@ -12,8 +12,6 @@ runs:
   using: composite
   steps:
     - name: List files in the repository
-      env:
-        service_name: ${{ inputs.service_name }}
       shell: bash
       run: |
         cd services/${{ inputs.service_name }}
