@@ -10,8 +10,8 @@ inputs:
     required: true
     default: ''
 
-run:
-  using: "composite"
+runs:
+  using: composite
   steps:
     - name: Configure GPG Key
       env:
