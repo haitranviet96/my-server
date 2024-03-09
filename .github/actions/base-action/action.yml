@@ -15,4 +15,4 @@ runs:
       shell: bash
       run: |
         cd services/${{ inputs.serviceName }}
-        ls ${{ github.workspace }}
+        ls .
