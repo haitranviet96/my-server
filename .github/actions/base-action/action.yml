@@ -1,7 +1,7 @@
 name: Checkout and prepare
 
 inputs:
-  service_name:
+  serviceName:
     description: 'The name of the service'
     required: true
 
@@ -14,5 +14,5 @@ runs:
     - name: List files in the repository
       shell: bash
       run: |
-        cd services/${{ inputs.service_name }}
+        cd services/${{ inputs.serviceName }}
         ls ${{ github.workspace }}
