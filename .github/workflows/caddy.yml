@@ -30,6 +30,7 @@ jobs:
         uses: ./.github/actions/sops-decode
         with:
           fileName: ${{ env.SERVICE_NAME }}.env
+          gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
       
       - name: SSH & Deploy
         uses: ./.github/actions/ssh-deploy

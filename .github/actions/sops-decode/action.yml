@@ -5,13 +5,17 @@ inputs:
     description: 'The name of the encoded file'
     required: true
     default: '.env'
+  gpgKey:
+    description: 'The GPG private key'
+    required: true
+    default: ''
 
 run:
   using: 'composite'
   steps:
     - name: Configure GPG Key
       env:
-        GPG_SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_SIGNING_KEY: ${{ inputs.gpgKey }}
       run: |
         echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
         gpg --list-secret-keys
