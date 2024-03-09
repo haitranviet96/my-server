@@ -1,26 +1,10 @@
-name: SSH Deploy to My Server
+name: Deploy to My Server
 
 run:
   using: 'composite'
   steps:
-    - name: Add SSH key
-      id: ssh
-      shell: bash {0}
-      env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      run: |
-        mkdir -p ~/.ssh
-        MACHINE_IP="$(tailscale ip -6 $MACHINE)"
-        ssh-keyscan $MACHINE_IP >> ~/.ssh/known_hosts
-        printf "%s" "$SSH_KEY" > ~/.ssh/key
-        chmod 600 ~/.ssh/key
-
-    - name: Copy and Deploy
+    - name: Deploy
       id: deploy
       shell: bash {0}
       run: |
-        TIME=$(date +%Y%m%d-%H%M%S)
-        MACHINE_IP="$(tailscale ip -6 $MACHINE)"
-        ssh -i ~/.ssh/key "haitv@$MACHINE_IP" "rm -rf ~/my-server;"
-        GLOBIGNORE=".git:.github:README.md" scp -i ~/.ssh/key -r ${{ github.workspace }} "haitv@[$MACHINE_IP]://home/haitv/"
-        ssh -i ~/.ssh/key "haitv@$MACHINE_IP" "cd ~/my-server;docker compose down;docker compose up -d;"
+        docker compose up -d

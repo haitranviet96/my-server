@@ -18,10 +18,3 @@ runs:
       run: |
         cd services/${{ inputs.service_name }}
         ls ${{ github.workspace }}
-
-    - name: Tailscale
-      uses: tailscale/github-action@v2
-      with:
-        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-        tags: tag:ci
