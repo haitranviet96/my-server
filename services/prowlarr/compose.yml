@@ -1,8 +1,9 @@
-prowlarr:
-  image: lscr.io/linuxserver/prowlarr:latest
-  container_name: prowlarr
-  env_file:
-    - ../docker.env
-  volumes:
-    - /config/prowlarr:/config
-  restart: unless-stopped
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    env_file:
+      - ../docker.env
+    volumes:
+      - /config/prowlarr:/config
+    restart: unless-stopped

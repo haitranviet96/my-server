@@ -1,11 +1,12 @@
-radarr:
-  image: lscr.io/linuxserver/radarr:latest
-  container_name: radarr
-  env_file:
-    - ../docker.env
-  volumes:
-    - /config/radarr:/config
-    - /media/Data/media-data:/data
-  restart: unless-stopped
-  extra_hosts:
-  - "host.docker.internal:host-gateway"
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    env_file:
+      - ../docker.env
+    volumes:
+      - /config/radarr:/config
+      - /media/Data/media-data:/data
+    restart: unless-stopped
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
