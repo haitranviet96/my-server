@@ -24,13 +24,13 @@ jobs:
       - name: Checkout & prepare
         uses: ./.github/actions/base-action
         with:
-          serviceName: ${{ env.SERVICE_NAME }}
+          serviceName: 
 
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
         with:
-          fileName: ${{ env.SERVICE_NAME }}.env
+          filePath: ${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
       
       - name: SSH & Deploy
-        uses: ./.github/actions/ssh-deploy
+        uses: ./.github/actions/deploy

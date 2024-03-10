@@ -1,7 +1,7 @@
 name: Decode Environment files by SOPS 
 
 inputs:
-  fileName:
+  filePath:
     description: 'The name of the encoded file'
     required: true
     default: '.env'
@@ -29,4 +29,4 @@ runs:
       run: |
         ls .
         pwd
-        sops -d -i -- ${{ inputs.fileName }}
+        sops -d -i -- ${{ inputs.filePath }}
