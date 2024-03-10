@@ -1,5 +1,5 @@
 env:
-  SERVICE_NAME: caddy
+  SERVICE_PATH: services/caddy
 
 name: Deploy Caddy to My Server
 
@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - services/$SERVICE_NAME/**
+      - services/$SERVICE_PATH/**
       - .github/workflows/**
       - .github/actions/**
 
@@ -24,8 +24,10 @@ jobs:
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
         with:
-          filePath: services/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}.env
+          filePath: ${{ env.SERVICE_PATH }}/config.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
       
       - name: Deploy
         uses: ./.github/actions/deploy
+        with:
+          servicePath: ${{ env.SERVICE_PATH }}

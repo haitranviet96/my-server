@@ -1,5 +1,11 @@
 name: Deploy to My Server
 
+inputs:
+  servicePath:
+    description: 'The path of the deploy service'
+    required: true
+    default: ''
+
 runs:
   using: composite
   steps:
@@ -7,5 +13,6 @@ runs:
       id: deploy
       shell: bash {0}
       run: |
+        cd ${{ inputs.servicePath }}
         docker compose down
         docker compose up -d
