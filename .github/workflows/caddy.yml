@@ -21,11 +21,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Checkout & prepare
-        uses: ./.github/actions/base-action
-        with:
-          serviceName: 
-
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
         with:
