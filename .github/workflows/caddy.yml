@@ -24,7 +24,7 @@ jobs:
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
         with:
-          filePath: ${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}.env
+          filePath: services/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
       
       - name: SSH & Deploy
