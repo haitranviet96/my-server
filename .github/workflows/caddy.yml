@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - $SERVICE_PATH/**
+      - services/caddy/**
       - .github/workflows/**
       - .github/actions/**
 
