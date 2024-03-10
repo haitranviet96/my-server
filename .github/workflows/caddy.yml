@@ -27,5 +27,5 @@ jobs:
           filePath: services/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
       
-      - name: SSH & Deploy
+      - name: Deploy
         uses: ./.github/actions/deploy

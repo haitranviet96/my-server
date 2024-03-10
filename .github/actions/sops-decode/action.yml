@@ -27,6 +27,4 @@ runs:
     - name: SOPS
       shell: bash {0}
       run: |
-        ls .
-        pwd
         sops -d -i -- ${{ inputs.filePath }}
