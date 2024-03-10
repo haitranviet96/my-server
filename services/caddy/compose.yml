@@ -3,7 +3,7 @@ services:
     build: ./caddy
     restart: unless-stopped
     env_file:
-      - ./caddy/config.env
+      - config.env
     ports:
       - "80:80"
       - "443:443"
