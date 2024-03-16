@@ -87,3 +87,7 @@ sudo dnf install git
 
 - Get runner: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners
 - Setup services: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service
+
+## 7. Install NVIDIA drivers & CUDA support
+
+- Follow instruction here: https://rpmfusion.org/Howto/NVIDIA
