@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - services/transmission/**
-      - .github/workflows/**
+      - .github/workflows/transmission.yml
       - .github/actions/**
 
 jobs:

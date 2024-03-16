@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - services/jellyfin/**
-      - .github/workflows/**
+      - .github/workflows/jellyfin.yml
       - .github/actions/**
 
 jobs:

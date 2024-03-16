@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - services/radarr/**
-      - .github/workflows/**
+      - .github/workflows/radarr.yml
       - .github/actions/**
 
 jobs:

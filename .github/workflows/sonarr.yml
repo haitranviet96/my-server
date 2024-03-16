@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - services/sonarr/**
-      - .github/workflows/**
+      - .github/workflows/sonarr.yml
       - .github/actions/**
 
 jobs:

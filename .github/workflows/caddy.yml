@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - services/caddy/**
-      - .github/workflows/**
+      - .github/workflows/caddy.yml
       - .github/actions/**
 
 jobs:

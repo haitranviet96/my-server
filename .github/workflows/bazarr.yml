@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - services/bazarr/**
-      - .github/workflows/**
+      - .github/workflows/bazarr.yml
       - .github/actions/**
 
 jobs:
