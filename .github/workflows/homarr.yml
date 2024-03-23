@@ -1,0 +1,27 @@
+env:
+  SERVICE_PATH: services/homarr
+
+name: Deploy Homarr to My Server
+
+run-name: ${{ github.actor }} is deploying to My Server 🚀
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/homarr/**
+      - .github/workflows/homarr.yml
+      - .github/actions/**
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          servicePath: ${{ env.SERVICE_PATH }}

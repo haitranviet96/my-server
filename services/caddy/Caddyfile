@@ -10,11 +10,7 @@
 }
 
 haivita.com {
-	respond "Hello, world!"
-}
-
-cloud.haivita.com {
-	respond "Hello, world!"
+	reverse_proxy host.docker.internal:7575
 }
 
 jellyfin.haivita.com {
