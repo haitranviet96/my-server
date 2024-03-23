@@ -91,3 +91,8 @@ sudo dnf install git
 ## 7. Install NVIDIA drivers & CUDA support
 
 - Follow instruction here: https://rpmfusion.org/Howto/NVIDIA
+
+## 8. Setup Wake on LAN
+- Enable Wake on LAN in BIOS
+- Verify and setup server if needed like this: https://wiki.archlinux.org/title/Wake-on-LAN 
+- Follow instruction here: https://www.cyberciti.biz/tips/linux-send-wake-on-lan-wol-magic-packets.html
