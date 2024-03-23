@@ -4,6 +4,7 @@ services:
     container_name: transmission
     env_file:
       - ../docker.env
+      - config.env
     volumes:
       - /config/transmission:/config
       - /media/Data/media-data/torrents:/data/torrents
