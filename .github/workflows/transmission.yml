@@ -20,7 +20,13 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      
+
+      - name: Setup & encode SOPS
+        uses: ./.github/actions/sops-decode
+        with:
+          filePath: ${{ env.SERVICE_PATH }}/config.env
+          gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
+
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
