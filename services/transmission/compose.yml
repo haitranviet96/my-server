@@ -12,7 +12,8 @@ services:
       - /media/Data/media-data/torrents:/data/torrents
     ports:
       - 9091
-      - 51413
+      - 51413:51413
+      - 51413:51413/udp
     restart: unless-stopped
     networks:
       - daimo-dc
