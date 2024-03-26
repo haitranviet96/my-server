@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   caddy:
     container_name: caddy
@@ -13,7 +15,13 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc
 
 volumes:
   caddy_data:

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   transmission:
     image: lscr.io/linuxserver/transmission:latest
@@ -9,7 +11,12 @@ services:
       - /config/transmission:/config
       - /media/Data/media-data/torrents:/data/torrents
     ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
+      - 9091
+      - 51413
     restart: unless-stopped
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc

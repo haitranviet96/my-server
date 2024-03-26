@@ -1,12 +1,17 @@
+version: '3.8'
+
 services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
-    network_mode: 'host'
     env_file:
       - ../docker.env
     volumes:
       - /config/prowlarr:/config
     restart: unless-stopped
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc

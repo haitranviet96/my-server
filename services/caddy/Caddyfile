@@ -10,31 +10,31 @@
 }
 
 haivita.com {
-	reverse_proxy host.docker.internal:7575
+	reverse_proxy homarr:7575
 }
 
 jellyfin.haivita.com {
-	reverse_proxy host.docker.internal:8096
+	reverse_proxy jellyfin:8096
 }
 
 radarr.haivita.com {
-	reverse_proxy host.docker.internal:7878
+	reverse_proxy radarr:7878
 }
 
 sonarr.haivita.com {
-	reverse_proxy host.docker.internal:8989
+	reverse_proxy sonarr:8989
 }
 
 bazarr.haivita.com {
-	reverse_proxy host.docker.internal:6767
+	reverse_proxy bazarr:6767
 }
 
 prowlarr.haivita.com {
-	reverse_proxy host.docker.internal:9696
+	reverse_proxy prowlarr:9696
 }
 
 transmission.haivita.com {
-	reverse_proxy host.docker.internal:9091
+	reverse_proxy transmission:9091
 }
 
 cockpit.haivita.com {
