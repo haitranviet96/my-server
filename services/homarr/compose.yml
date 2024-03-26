@@ -14,7 +14,9 @@ services:
       - ${HOME}/homarr/icons:/app/public/icons
       - ${HOME}/homarr/data:/data
     ports:
-      - '7575'
+      - 7575
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - daimo-dc
 
