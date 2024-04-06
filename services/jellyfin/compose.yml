@@ -11,8 +11,6 @@ services:
       - /config/jellyfin:/config
       - /media/Data/media-data/media:/media
       - ${HOME}/.cache/jellyfin:/cache
-    devices:
-      - /dev/dri/renderD129:/dev/dri/renderD129
     restart: 'unless-stopped'
     networks:
       - daimo-dc
