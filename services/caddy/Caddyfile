@@ -37,6 +37,10 @@ transmission.haivita.com {
 	reverse_proxy transmission:9091
 }
 
+home.haivita.com {
+	reverse_proxy homeassistant:8123
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login

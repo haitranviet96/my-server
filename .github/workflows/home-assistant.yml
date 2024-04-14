@@ -1,7 +1,7 @@
 env:
   SERVICE_PATH: services/home-assistant
 
-name: Deploy Homarr to My Server
+name: Deploy Home Assistant to My Server
 
 run-name: ${{ github.actor }} is deploying to My Server 🚀
 
