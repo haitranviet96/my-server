@@ -10,7 +10,7 @@
 }
 
 haivita.com {
-	reverse_proxy homarr:7575
+	reverse_proxy homepage:3000
 }
 
 jellyfin.haivita.com {
