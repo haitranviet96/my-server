@@ -20,7 +20,12 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      
+
+      - name: Sync Configs
+        shell: bash {0}
+        run: |
+          rsync -avr ${{ env.SERVICE_PATH }}/configs /root/homepage
+
       - name: Deploy
         uses: ./.github/actions/deploy
         with:

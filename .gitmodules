@@ -1,0 +1,3 @@
+[submodule "services/homepage/configs"]
+	path = services/homepage/configs
+	url = https://github.com/haitranviet96/haivita-homepage.git
