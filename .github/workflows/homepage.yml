@@ -24,8 +24,8 @@ jobs:
       - name: Sync Configs
         shell: bash {0}
         run: |
-          echo "test" > /root/homepage/configs/test.xyz
-          rsync -r ${{ env.SERVICE_PATH }}/configs /root/homepage
+          echo "test" > ~/homepage/configs/test.xyz
+          rsync -avz ./${{ env.SERVICE_PATH }}/configs ~/homepage
 
       - name: Deploy
         uses: ./.github/actions/deploy
