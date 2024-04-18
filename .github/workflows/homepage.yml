@@ -24,7 +24,7 @@ jobs:
       - name: Sync Configs
         shell: bash {0}
         run: |
-          echo "test" /root/homepage/configs/test.xyz
+          echo "test" > /root/homepage/configs/test.xyz
           rsync -r ${{ env.SERVICE_PATH }}/configs /root/homepage
 
       - name: Deploy
