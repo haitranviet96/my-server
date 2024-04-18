@@ -20,13 +20,13 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Sync Configs
         shell: bash {0}
         run: |
-          sudo echo "test" > /root/homepage/configs/test.xyz
-          sudo echo "test" > ~/test.xyz
-          sudo rsync -avz ./${{ env.SERVICE_PATH }}/configs /root/homepage
+          rsync -avz ./${{ env.SERVICE_PATH }}/configs ~/homepage
 
       - name: Deploy
         uses: ./.github/actions/deploy
