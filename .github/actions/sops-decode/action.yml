@@ -13,16 +13,16 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Configure GPG Key
-      env:
-        GPG_SIGNING_KEY: ${{ inputs.gpgKey }}
-      shell: bash
-      run: |
-        echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
-        gpg --list-secret-keys
-
-    - name: Setup SOPS
-      uses: nhedger/setup-sops@v2
+    # - name: Configure GPG Key
+    #   env:
+    #     GPG_SIGNING_KEY: ${{ inputs.gpgKey }}
+    #   shell: bash
+    #   run: |
+    #     echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
+    #     gpg --list-secret-keys
+    # 
+    # - name: Setup SOPS
+    #   uses: nhedger/setup-sops@v2
 
     - name: SOPS
       shell: bash {0}

@@ -23,6 +23,12 @@ jobs:
         with:
           submodules: true
 
+      - name: Setup & encode SOPS
+        uses: ./.github/actions/sops-decode
+        with:
+          filePath: ${{ env.SERVICE_PATH }}/configs/settings.yaml
+          gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
+
       - name: Sync Configs
         shell: bash {0}
         run: |
