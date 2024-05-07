@@ -33,10 +33,6 @@ prowlarr.haivita.com {
 	reverse_proxy prowlarr:9696
 }
 
-transmission.haivita.com {
-	reverse_proxy transmission:9091
-}
-
 home.haivita.com {
 	reverse_proxy homeassistant:8123
 }
