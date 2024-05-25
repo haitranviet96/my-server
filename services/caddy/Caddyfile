@@ -41,6 +41,10 @@ qbit.haivita.com {
 	reverse_proxy qbittorrent:8080
 }
 
+chat.haivita.com {
+	reverse_proxy host.docker.internal:3000
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login
