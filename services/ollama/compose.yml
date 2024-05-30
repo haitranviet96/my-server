@@ -1,0 +1,28 @@
+name: ollama-webui
+
+services:
+  ollama:
+    volumes:
+      - ollama:/root/.ollama
+    container_name: ollama
+    image: ollama/ollama
+  open-webui:
+    volumes:
+      - open-webui:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    container_name: open-webui
+    restart: always
+    image: ghcr.io/open-webui/open-webui:main
+
+networks:
+  daimo-dc:
+    name: daimo-dc
+
+volumes:
+  open-webui:
+    external: true
+    name: open-webui
+  ollama:
+    external: true
+    name: ollama
