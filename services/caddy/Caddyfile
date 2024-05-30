@@ -45,6 +45,10 @@ chat.haivita.com {
 	reverse_proxy open-webui:8080
 }
 
+ollama.haivita.com {
+	reverse_proxy ollama:11434
+}
+
 cockpit.haivita.com {
 	@auth {
 		not path /cockpit/login
