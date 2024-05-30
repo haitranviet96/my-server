@@ -42,7 +42,7 @@ qbit.haivita.com {
 }
 
 chat.haivita.com {
-	reverse_proxy host.docker.internal:3000
+	reverse_proxy open-webui:3000
 }
 
 cockpit.haivita.com {
