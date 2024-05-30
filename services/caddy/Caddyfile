@@ -42,7 +42,7 @@ qbit.haivita.com {
 }
 
 chat.haivita.com {
-	reverse_proxy open-webui:3000
+	reverse_proxy open-webui:8080
 }
 
 cockpit.haivita.com {
