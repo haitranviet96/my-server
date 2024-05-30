@@ -5,10 +5,14 @@ services:
     volumes:
       - ollama:/root/.ollama
     container_name: ollama
+    restart: unless-stopped
     image: ollama/ollama
+
   open-webui:
     volumes:
       - open-webui:/app/backend/data
+    depends_on:
+      - ollama
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
     container_name: open-webui
@@ -20,9 +24,5 @@ networks:
     name: daimo-dc
 
 volumes:
-  open-webui:
-    external: true
-    name: open-webui
-  ollama:
-    external: true
-    name: ollama
+  ollama: {}
+  open-webui: {}
