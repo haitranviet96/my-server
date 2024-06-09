@@ -12,8 +12,10 @@ duckdns {
 	api_token {env.DUCKDNS_API_TOKEN}
 }
 
-tls {
-	dns duckdns {env.DUCKDNS_API_TOKEN}
+*.haivita.duckdns.org {
+	tls {
+		dns duckdns {env.DUCKDNS_API_TOKEN}
+	}
 }
 
 haivita.duckdns.org {
