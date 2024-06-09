@@ -7,14 +7,12 @@
 # 	}
 # 	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 # }
-
-duckdns {
-	api_token {env.DUCKDNS_API_TOKEN}
-}
-
-*.haivita.duckdns.org {
-	tls {
-		dns duckdns {env.DUCKDNS_API_TOKEN}
+{
+	dynamic_dns {
+		provider duckdns {env.DUCKDNS_API_TOKEN}
+		domains {
+			haivita.duckdns.org
+		}
 	}
 }
 
