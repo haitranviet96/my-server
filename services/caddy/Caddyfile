@@ -8,43 +8,51 @@
 # 	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 # }
 
-haivita.ddns.net {
+duckdns {
+	api_token {env.DUCKDNS_API_TOKEN}
+}
+
+tls {
+	dns duckdns {env.DUCKDNS_API_TOKEN}
+}
+
+haivita.duckdns.org {
 	reverse_proxy homepage:3000
 }
 
-jellyfin.haivita.ddns.net {
+jellyfin.haivita.duckdns.org {
 	reverse_proxy jellyfin:8096
 }
 
-radarr.haivita.ddns.net {
+radarr.haivita.duckdns.org {
 	reverse_proxy radarr:7878
 }
 
-sonarr.haivita.ddns.net {
+sonarr.haivita.duckdns.org {
 	reverse_proxy sonarr:8989
 }
 
-bazarr.haivita.ddns.net {
+bazarr.haivita.duckdns.org {
 	reverse_proxy bazarr:6767
 }
 
-prowlarr.haivita.ddns.net {
+prowlarr.haivita.duckdns.org {
 	reverse_proxy prowlarr:9696
 }
 
-home.haivita.ddns.net {
+home.haivita.duckdns.org {
 	reverse_proxy homeassistant:8123
 }
 
-qbit.haivita.ddns.net {
+qbit.haivita.duckdns.org {
 	reverse_proxy qbittorrent:8080
 }
 
-chat.haivita.ddns.net {
+chat.haivita.duckdns.org {
 	reverse_proxy open-webui:8080
 }
 
-ollama.haivita.ddns.net {
+ollama.haivita.duckdns.org {
 	basicauth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
@@ -52,7 +60,7 @@ ollama.haivita.ddns.net {
 	reverse_proxy ollama:11434
 }
 
-cockpit.haivita.ddns.net {
+cockpit.haivita.duckdns.org {
 	@auth {
 		not path /cockpit/login
 	}
