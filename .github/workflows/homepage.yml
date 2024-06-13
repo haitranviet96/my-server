@@ -32,7 +32,7 @@ jobs:
       - name: Sync Configs
         shell: bash {0}
         run: |
-          rsync -avz --exclude={'.git','README.md'} ./${{ env.SERVICE_PATH }}/configs ~/homepage
+          rsync -avz ./${{ env.SERVICE_PATH }}/configs ~/homepage
 
       - name: Deploy
         uses: ./.github/actions/deploy
