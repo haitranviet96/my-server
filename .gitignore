@@ -1,1 +1,4 @@
 **/.decrypted*
+**/*.dev.env
+**/*.local.env
+**/*.development.env
