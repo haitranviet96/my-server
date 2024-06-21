@@ -10,6 +10,8 @@ on:
     branches:
       - main
     paths:
+      - .gitmodules
+      - services/homepage
       - services/homepage/**
       - .github/workflows/homepage.yml
       - .github/actions/**
