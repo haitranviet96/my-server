@@ -6,6 +6,10 @@ services:
     restart: unless-stopped
     env_file:
       - config.env
+      - path: .local.env
+        required: false
+    expose:
+      - "2019"
     ports:
       - "80:80"
       - "443:443"
