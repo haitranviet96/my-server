@@ -1,11 +1,11 @@
 services:
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
-    container_name: prowlarr
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
     env_file:
       - ../docker.env
     volumes:
-      - /config/prowlarr:/config
+      - /config/overseerr:/app/config
     restart: unless-stopped
     networks:
       - daimo-dc
