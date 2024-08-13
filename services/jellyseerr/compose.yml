@@ -1,11 +1,11 @@
 services:
-  overseerr:
-    image: sctx/overseerr:latest
-    container_name: overseerr
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
     env_file:
       - ../docker.env
     volumes:
-      - /config/overseerr:/app/config
+      - /config/jellyseerr:/app/config
     restart: unless-stopped
     networks:
       - daimo-dc

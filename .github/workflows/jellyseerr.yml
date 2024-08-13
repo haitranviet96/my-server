@@ -1,7 +1,7 @@
 env:
-  SERVICE_PATH: services/overseerr
+  SERVICE_PATH: services/jellyseerr
 
-name: Deploy Overseerr to My Server
+name: Deploy Jellyseerr to My Server
 
 run-name: ${{ github.actor }} is deploying to My Server 🚀
 
@@ -10,8 +10,8 @@ on:
     branches:
       - main
     paths:
-      - services/overseerr/**
-      - .github/workflows/overseerr.yml
+      - services/jellyseerr/**
+      - .github/workflows/jellyseerr.yml
       - .github/actions/**
 
 jobs:

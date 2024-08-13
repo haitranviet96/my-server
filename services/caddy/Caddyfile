@@ -38,8 +38,8 @@ bazarr.haivita.duckdns.org {
 	reverse_proxy bazarr:6767
 }
 
-overseerr.haivita.duckdns.org {
-	reverse_proxy overseerr:5055
+jellyseerr.haivita.duckdns.org {
+	reverse_proxy jellyseerr:5055
 }
 
 prowlarr.haivita.duckdns.org {
