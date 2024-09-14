@@ -22,6 +22,10 @@ haivita.duckdns.org {
 	reverse_proxy homepage:3000
 }
 
+file.haivita.duckdns.org {
+	reverse_proxy filebrowser:8080
+}
+
 jellyfin.haivita.duckdns.org {
 	reverse_proxy jellyfin:8096
 }

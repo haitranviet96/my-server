@@ -1,0 +1,17 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    env_file:
+      - ../docker.env
+    volumes:
+      - /media/Data:/srv
+      - /config/filebrowser/database.db:/filebrowser.db
+      - /config/filebrowser/.filebrowser.json:/.filebrowser.json
+    restart: unless-stopped
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc
