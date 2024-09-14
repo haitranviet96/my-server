@@ -8,13 +8,20 @@
 # 	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 # }
 {
-    admin 0.0.0.0:2019
+	admin 0.0.0.0:2019
 
 	dynamic_dns {
 		provider duckdns {env.DUCKDNS_API_TOKEN}
 		domains {
-			haivita.duckdns.org
+			haivita.duckdns.org subdomain
 		}
+		dynamic_domains
+	}
+}
+
+*.haivita.duckdns.org:443 {
+	tls {
+		dns duckdns {env.DUCKDNS_API_TOKEN}
 	}
 }
 
@@ -63,7 +70,7 @@ chat.haivita.duckdns.org {
 }
 
 ollama.haivita.duckdns.org {
-	basicauth {
+	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
 
@@ -75,7 +82,7 @@ cockpit.haivita.duckdns.org {
 		not path /cockpit/login
 	}
 
-	basicauth @auth {
+	basic_auth @auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
 
