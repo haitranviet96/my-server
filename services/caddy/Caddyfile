@@ -33,6 +33,10 @@ file.haivita.duckdns.org {
 	reverse_proxy filebrowser:8080
 }
 
+image.haivita.duckdns.org {
+	reverse_proxy immich_server:3001
+}
+
 jellyfin.haivita.duckdns.org {
 	reverse_proxy jellyfin:8096
 }
