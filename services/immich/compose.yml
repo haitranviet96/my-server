@@ -20,7 +20,7 @@ services:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      # - config.env
+      - config.env
       - path: .local.env
         required: false
     # ports:
