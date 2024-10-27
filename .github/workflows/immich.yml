@@ -24,13 +24,13 @@ jobs:
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
         with:
-          filePath: ${{ env.SERVICE_PATH }}/.env
+          filePath: ${{ env.SERVICE_PATH }}/config.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - uses: cardinalby/export-env-action@v2
         with:
           mask: true
-          envFile: ${{ env.SERVICE_PATH }}/.env
+          envFile: ${{ env.SERVICE_PATH }}/config.env
 
       - name: Deploy
         uses: ./.github/actions/deploy
