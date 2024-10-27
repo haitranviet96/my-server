@@ -27,6 +27,10 @@ jobs:
           filePath: ${{ env.SERVICE_PATH }}/.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
+      - uses: cardinalby/export-env-action@v2
+        with:
+          envFile: ${{ env.SERVICE_PATH }}/.env
+
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
