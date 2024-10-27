@@ -13,9 +13,8 @@
 	dynamic_dns {
 		provider duckdns {env.DUCKDNS_API_TOKEN}
 		domains {
-			haivita.duckdns.org subdomain
+			haivita.duckdns.org *
 		}
-		dynamic_domains
 	}
 }
 
@@ -79,6 +78,10 @@ ollama.haivita.duckdns.org {
 	}
 
 	reverse_proxy ollama:11434
+}
+
+wud.haivita.duckdns.org {
+	reverse_proxy wud:3000
 }
 
 cockpit.haivita.duckdns.org {

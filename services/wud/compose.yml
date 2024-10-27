@@ -1,0 +1,18 @@
+services:
+  whatsupdocker:
+    image: getwud/wud
+    container_name: wud
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - path: .local.env
+        required: false
+    ports:
+      - 3000
+    restart: unless-stopped
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc
