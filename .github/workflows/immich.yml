@@ -32,6 +32,7 @@ jobs:
         run: |
           cd ${{ env.SERVICE_PATH }}
           docker compose down
+          set -o allexport
           source config.env
-          cp config.env .env
+          set +o allexport
           docker compose up -d --build
