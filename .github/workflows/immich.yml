@@ -27,12 +27,14 @@ jobs:
           filePath: ${{ env.SERVICE_PATH }}/config.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
-      - name: Deploy
-        shell: bash {0}
+       # Load environment variables from config.env
+      - name: Load environment variables
         run: |
-          cd ${{ env.SERVICE_PATH }}
-          docker compose down
           set -o allexport
           source config.env
           set +o allexport
-          docker compose up -d --build
+
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          servicePath: ${{ env.SERVICE_PATH }}
