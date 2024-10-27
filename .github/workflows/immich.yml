@@ -28,6 +28,8 @@ jobs:
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Deploy
-        uses: ./.github/actions/deploy
-        with:
-          servicePath: ${{ env.SERVICE_PATH }}
+        shell: bash {0}
+        run: |
+          cd ${{ env.SERVICE_PATH }}
+          docker compose down
+          docker compose --env-file config.env up -d --build
