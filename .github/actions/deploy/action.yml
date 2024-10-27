@@ -15,5 +15,5 @@ runs:
       run: |
         cd ${{ inputs.servicePath }}
         docker compose down
-        cp config.env .env
+        source config.env
         docker compose up -d --build
