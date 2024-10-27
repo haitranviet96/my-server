@@ -32,4 +32,6 @@ jobs:
         run: |
           cd ${{ env.SERVICE_PATH }}
           docker compose down
-          docker compose --env-file config.env up -d --build
+          source config.env
+          cp config.env .env
+          docker compose up -d --build
