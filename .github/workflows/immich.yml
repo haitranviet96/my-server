@@ -29,6 +29,7 @@ jobs:
 
       - uses: cardinalby/export-env-action@v2
         with:
+          mask: true
           envFile: ${{ env.SERVICE_PATH }}/.env
 
       - name: Deploy
