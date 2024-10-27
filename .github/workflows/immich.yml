@@ -24,16 +24,8 @@ jobs:
       - name: Setup & encode SOPS
         uses: ./.github/actions/sops-decode
         with:
-          filePath: ${{ env.SERVICE_PATH }}/config.env
+          filePath: ${{ env.SERVICE_PATH }}/.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
-
-       # Load environment variables from config.env
-      - name: Load environment variables
-        run: |
-          cd ${{ env.SERVICE_PATH }}
-          set -o allexport
-          source config.env
-          set +o allexport
 
       - name: Deploy
         uses: ./.github/actions/deploy

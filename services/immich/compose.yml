@@ -20,7 +20,6 @@ services:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - config.env
       - path: .local.env
         required: false
     # ports:
@@ -45,7 +44,6 @@ services:
     volumes:
       - model-cache:/cache
     env_file:
-      # - config.env
       - path: .local.env
         required: false
     restart: always
