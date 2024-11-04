@@ -73,6 +73,10 @@ chat.haivita.duckdns.org {
 	reverse_proxy open-webui:8080
 }
 
+up.haivita.duckdns.org {
+	reverse_proxy uptime-kuma:3001
+}
+
 ollama.haivita.duckdns.org {
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
