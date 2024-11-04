@@ -13,6 +13,7 @@ on:
       - services/caddy/**
       - .github/workflows/caddy.yml
       - .github/actions/**
+  workflow_dispatch:
 
 jobs:
   deploy:

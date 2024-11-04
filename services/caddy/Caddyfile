@@ -15,10 +15,11 @@
 		domains {
 			haivita.duckdns.org *
 		}
+		versions ipv4
 	}
 }
 
-*.haivita.duckdns.org:443 {
+*.haivita.duckdns.org {
 	tls {
 		dns duckdns {env.DUCKDNS_API_TOKEN}
 	}

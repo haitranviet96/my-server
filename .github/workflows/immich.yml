@@ -13,6 +13,7 @@ on:
       - services/immich/**
       - .github/workflows/immich.yml
       - .github/actions/**
+  workflow_dispatch:
 
 jobs:
   deploy:

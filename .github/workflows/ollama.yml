@@ -13,6 +13,7 @@ on:
       - services/ollama/**
       - .github/workflows/ollama.yml
       - .github/actions/**
+  workflow_dispatch:
 
 jobs:
   deploy:
