@@ -32,6 +32,6 @@ jobs:
         shell: bash {0}
         run: |
           cd ${{ env.SERVICE_PATH }}
+          cp config.env .env
           docker compose down
-          cp config.env a.env
-          docker compose --env-file a.env up -d --build
+          docker compose up -d --build
