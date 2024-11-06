@@ -10,74 +10,94 @@
 {
 	admin 0.0.0.0:2019
 
+	# dynamic_dns {
+	# 	provider duckdns {env.DUCKDNS_API_TOKEN}
+	# 	domains {
+	# 		haivita.duckdns.org *
+	# 	}
+	# 	versions ipv4
+	# }
+
 	dynamic_dns {
-		provider duckdns {env.DUCKDNS_API_TOKEN}
+		provider dynv6 {env.DYNV6_API_TOKEN}
 		domains {
-			haivita.duckdns.org *
+			haivita.dynv6.net *
 		}
 		versions ipv4
 	}
 }
 
-*.haivita.duckdns.org {
+# *.haivita.duckdns.org {
+# 	tls {
+# 		dns duckdns {env.DUCKDNS_API_TOKEN}
+# 	}
+# 	handle {
+# 		respond 404
+# 	}
+# }
+
+*.haivita.dynv6.net {
 	tls {
-		dns duckdns {env.DUCKDNS_API_TOKEN}
+		dns dynv6 {env.DYNV6_API_TOKEN}
+	}
+	handle {
+		respond 404
 	}
 }
 
-haivita.duckdns.org {
+haivita.dynv6.net {
 	reverse_proxy homepage:3000
 }
 
-file.haivita.duckdns.org {
+file.haivita.dynv6.net {
 	reverse_proxy filebrowser:8080
 }
 
-image.haivita.duckdns.org {
+image.haivita.dynv6.net {
 	reverse_proxy immich_server:2283
 }
 
-jellyfin.haivita.duckdns.org {
+jellyfin.haivita.dynv6.net {
 	reverse_proxy jellyfin:8096
 }
 
-radarr.haivita.duckdns.org {
+radarr.haivita.dynv6.net {
 	reverse_proxy radarr:7878
 }
 
-sonarr.haivita.duckdns.org {
+sonarr.haivita.dynv6.net {
 	reverse_proxy sonarr:8989
 }
 
-bazarr.haivita.duckdns.org {
+bazarr.haivita.dynv6.net {
 	reverse_proxy bazarr:6767
 }
 
-jellyseerr.haivita.duckdns.org {
+jellyseerr.haivita.dynv6.net {
 	reverse_proxy jellyseerr:5055
 }
 
-prowlarr.haivita.duckdns.org {
+prowlarr.haivita.dynv6.net {
 	reverse_proxy prowlarr:9696
 }
 
-home.haivita.duckdns.org {
+home.haivita.dynv6.net {
 	reverse_proxy homeassistant:8123
 }
 
-qbit.haivita.duckdns.org {
+qbit.haivita.dynv6.net {
 	reverse_proxy qbittorrent:8080
 }
 
-chat.haivita.duckdns.org {
+chat.haivita.dynv6.net {
 	reverse_proxy open-webui:8080
 }
 
-up.haivita.duckdns.org {
+up.haivita.dynv6.net {
 	reverse_proxy uptime-kuma:3001
 }
 
-ollama.haivita.duckdns.org {
+ollama.haivita.dynv6.net {
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
@@ -85,11 +105,11 @@ ollama.haivita.duckdns.org {
 	reverse_proxy ollama:11434
 }
 
-wud.haivita.duckdns.org {
+wud.haivita.dynv6.net {
 	reverse_proxy wud:3000
 }
 
-cockpit.haivita.duckdns.org {
+cockpit.haivita.dynv6.net {
 	@auth {
 		not path /cockpit/login
 	}
