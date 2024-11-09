@@ -49,6 +49,10 @@ haivita.dynv6.net {
 	reverse_proxy homepage:3000
 }
 
+blog.haivita.dynv6.net {
+	reverse_proxy ghost:2368
+}
+
 file.haivita.dynv6.net {
 	reverse_proxy filebrowser:8080
 }
