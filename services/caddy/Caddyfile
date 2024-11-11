@@ -49,6 +49,10 @@ haivita.dynv6.net {
 	reverse_proxy homepage:3000
 }
 
+trade.haivita.dynv6.net {
+	reverse_proxy freqtrade:8080
+}
+
 blog.haivita.dynv6.net {
 	reverse_proxy ghost:2368
 }
