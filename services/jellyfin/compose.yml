@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   jellyfin:
@@ -11,6 +10,13 @@ services:
       - /config/jellyfin:/config
       - /media/Data/media-data/media:/media
       - ${HOME}/.cache/jellyfin:/cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     restart: 'unless-stopped'
     networks:
       - daimo-dc
