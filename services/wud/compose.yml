@@ -16,7 +16,7 @@ services:
       start_period: 10s
     ports:
       - 3000
-    restart: unless-stopped
+    restart: always
     networks:
       - daimo-dc
 

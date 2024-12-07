@@ -1,7 +1,8 @@
 
 services:
   ghost:
-    image: ghost:5-alpine
+    image: ghost:latest
+    container_name: ghost
     restart: unless-stopped
     ports:
       - 2368
@@ -9,7 +10,7 @@ services:
       - ../docker.env
     environment:
       database__client: mysql
-      database__connection__host: db
+      database__connection__host: ghost-db
       database__connection__user: ${DB_USERNAME}
       database__connection__password: ${DB_PASSWORD}
       database__connection__database: ${DB_DATABASE_NAME}
@@ -19,8 +20,9 @@ services:
     networks:
       - daimo-dc
 
-  db:
+  ghost-db:
     image: mysql:8.0
+    container_name: ghost-db
     restart: unless-stopped
     env_file:
       - ../docker.env
