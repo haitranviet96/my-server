@@ -6,6 +6,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # Uncomment the below line if you want glances to display host OS detail instead of container's
       - /etc/os-release:/etc/os-release:ro
+      - /home/haitv/.config/glances/glances.conf:/etc/glances/glances.conf
+      - /media/Data:/Data:ro
+      - /root:/Root:ro
+      - /home:/Home:ro
     environment:
       - "GLANCES_OPT=-w --password"
     # For nvidia GPUs
@@ -20,13 +24,8 @@ services:
     secrets:
       - source: glances_password
         target: /root/.config/glances/glances.pwd
-    networks:
-      - daimo-dc
+    network_mode: host
 
 secrets:
   glances_password:
     file: /home/haitv/.config/glances/glances_password
-
-networks:
-  daimo-dc:
-    name: daimo-dc

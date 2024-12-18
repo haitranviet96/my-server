@@ -36,6 +36,17 @@
 # 	}
 # }
 
+
+*.haivita.duckdns.org {
+	tls {
+		dns duckdns {env.DUCKDNS_API_TOKEN}
+	}
+
+	handle {
+		respond 404
+	}
+}
+
 *.haivita.dynv6.net {
 	tls {
 		dns dynv6 {env.DYNV6_API_TOKEN}
@@ -45,7 +56,7 @@
 	}
 }
 
-haivita.dynv6.net {
+haivita.dynv6.net, haivita.duckdns.org {
 	reverse_proxy homepage:3000
 }
 
@@ -70,7 +81,7 @@ file.haivita.dynv6.net {
 }
 
 glances.haivita.dynv6.net {
-	reverse_proxy glances:61208
+	reverse_proxy host.docker.internal:61208
 }
 
 image.haivita.dynv6.net {
