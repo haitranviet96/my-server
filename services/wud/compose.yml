@@ -5,6 +5,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
+      - ../docker.env
       - config.env
       - path: .local.env
         required: false
