@@ -27,16 +27,6 @@
 	# }
 }
 
-# *.haivita.duckdns.org {
-# 	tls {
-# 		dns duckdns {env.DUCKDNS_API_TOKEN}
-# 	}
-# 	handle {
-# 		respond 404
-# 	}
-# }
-
-
 *.haivita.duckdns.org {
 	tls {
 		dns duckdns {env.DUCKDNS_API_TOKEN}
