@@ -10,13 +10,13 @@
 {
 	admin 0.0.0.0:2019
 
-	# dynamic_dns {
-	# 	provider duckdns {env.DUCKDNS_API_TOKEN}
-	# 	domains {
-	# 		haivita.duckdns.org *
-	# 	}
-	# 	versions ipv4
-	# }
+	dynamic_dns {
+		provider duckdns {env.DUCKDNS_API_TOKEN}
+		domains {
+			haivita.duckdns.org *
+		}
+		versions ipv4
+	}
 
 	# dynamic_dns {
 	# 	provider dynv6 {env.DYNV6_API_TOKEN}
