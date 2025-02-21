@@ -127,7 +127,11 @@ ollama.haivita.dynv6.net {
 }
 
 wud.haivita.dynv6.net {
-	reverse_proxy wud:3000
+	reverse_proxy wud:3000 {
+		transport http {
+			dial_timeout 15s
+		}
+	}
 }
 
 cockpit.haivita.dynv6.net {
