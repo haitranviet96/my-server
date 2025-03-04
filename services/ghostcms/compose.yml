@@ -14,7 +14,7 @@ services:
       database__connection__user: ${DB_USERNAME}
       database__connection__password: ${DB_PASSWORD}
       database__connection__database: ${DB_DATABASE_NAME}
-      url: https://blog.haivita.dynv6.net
+      url: https://blog.haivita.top
     volumes:
       - /config/ghost:/var/lib/ghost/content
     networks:

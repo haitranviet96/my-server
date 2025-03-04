@@ -1,12 +1,3 @@
-# {
-# 	dynamic_dns {
-# 		provider cloudflare {env.CLOUDFLARE_API_TOKEN}
-# 		domains {
-# 			haivita.com
-# 		}
-# 	}
-# 	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-# }
 {
 	admin 0.0.0.0:2019
 
@@ -15,16 +6,24 @@
 		domains {
 			haivita.duckdns.org *
 		}
-		versions ipv4
+		versions ipv4 ipv6
 	}
 
-	# dynamic_dns {
-	# 	provider dynv6 {env.DYNV6_API_TOKEN}
-	# 	domains {
-	# 		haivita.dynv6.net
-	# 	}
-	# 	versions ipv4
-	# }
+	dynamic_dns {
+		provider dynv6 {env.DYNV6_API_TOKEN}
+		domains {
+			haivita.dynv6.net
+		}
+		versions ipv4 ipv6
+	}
+
+	dynamic_dns {
+		provider cloudflare {env.CLOUDFLARE_API_TOKEN}
+		domains {
+			haivita.top *
+		}
+	}
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 *.haivita.duckdns.org {
@@ -46,19 +45,28 @@
 	}
 }
 
-haivita.dynv6.net, haivita.duckdns.org {
+*.haivita.top {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	handle {
+		respond 404
+	}
+}
+
+haivita.dynv6.net, haivita.duckdns.org, haivita.top {
 	reverse_proxy homepage:3000
 }
 
-trade.haivita.dynv6.net {
+trade.haivita.top {
 	reverse_proxy freqtrade:8080
 }
 
-blog.haivita.dynv6.net {
+blog.haivita.top {
 	reverse_proxy ghost:2368
 }
 
-ddns.haivita.dynv6.net {
+ddns.haivita.top {
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
@@ -66,59 +74,59 @@ ddns.haivita.dynv6.net {
 	reverse_proxy ddns-updater:8000
 }
 
-file.haivita.dynv6.net {
+file.haivita.top {
 	reverse_proxy filebrowser:8080
 }
 
-glances.haivita.dynv6.net {
+glances.haivita.top {
 	reverse_proxy host.docker.internal:61208
 }
 
-image.haivita.dynv6.net {
+image.haivita.top {
 	reverse_proxy immich_server:2283
 }
 
-jellyfin.haivita.dynv6.net {
+jellyfin.haivita.top {
 	reverse_proxy jellyfin:8096
 }
 
-radarr.haivita.dynv6.net {
+radarr.haivita.top {
 	reverse_proxy radarr:7878
 }
 
-sonarr.haivita.dynv6.net {
+sonarr.haivita.top {
 	reverse_proxy sonarr:8989
 }
 
-bazarr.haivita.dynv6.net {
+bazarr.haivita.top {
 	reverse_proxy bazarr:6767
 }
 
-jellyseerr.haivita.dynv6.net {
+jellyseerr.haivita.top {
 	reverse_proxy jellyseerr:5055
 }
 
-prowlarr.haivita.dynv6.net {
+prowlarr.haivita.top {
 	reverse_proxy prowlarr:9696
 }
 
-home.haivita.dynv6.net {
+home.haivita.top {
 	reverse_proxy homeassistant:8123
 }
 
-qbit.haivita.dynv6.net {
+qbit.haivita.top {
 	reverse_proxy qbittorrent:8080
 }
 
-chat.haivita.dynv6.net {
+chat.haivita.top {
 	reverse_proxy open-webui:8080
 }
 
-up.haivita.dynv6.net {
+up.haivita.top {
 	reverse_proxy uptime-kuma:3001
 }
 
-ollama.haivita.dynv6.net {
+ollama.haivita.top {
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
@@ -126,7 +134,7 @@ ollama.haivita.dynv6.net {
 	reverse_proxy ollama:11434
 }
 
-wud.haivita.dynv6.net {
+wud.haivita.top {
 	reverse_proxy wud:3000 {
 		transport http {
 			dial_timeout 15s
@@ -134,7 +142,7 @@ wud.haivita.dynv6.net {
 	}
 }
 
-cockpit.haivita.dynv6.net {
+cockpit.haivita.top {
 	@auth {
 		not path /cockpit/login
 	}
