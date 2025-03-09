@@ -62,6 +62,10 @@ trade.haivita.top {
 	reverse_proxy freqtrade:8080
 }
 
+speed.haivita.top {
+	reverse_proxy speedtest-tracker:80
+}
+
 blog.haivita.top {
 	reverse_proxy ghost:2368
 }

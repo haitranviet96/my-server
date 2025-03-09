@@ -1,0 +1,21 @@
+services:
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    restart: unless-stopped
+    container_name: speedtest-tracker
+    ports:
+      - 80
+      - 443
+    env_file:
+      - ../docker.env
+      - config.env
+      - path: .local.env
+        required: false
+    volumes:
+      - /config/speedtest-tracker:/config
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc
