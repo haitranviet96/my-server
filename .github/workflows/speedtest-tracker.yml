@@ -1,0 +1,34 @@
+env:
+  SERVICE_PATH: services/speedtest-tracker
+
+name: Deploy Speedtest Tracker to My Server
+
+run-name: ${{ github.actor }} is deploying to My Server 🚀
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/speedtest-tracker/**
+      - .github/workflows/speedtest-tracker.yml
+      - .github/actions/**
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup & encode SOPS
+        uses: ./.github/actions/sops-decode
+        with:
+          filePath: ${{ env.SERVICE_PATH }}/config.env
+          gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          servicePath: ${{ env.SERVICE_PATH }}
