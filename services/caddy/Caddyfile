@@ -1,30 +1,5 @@
 {
 	admin 0.0.0.0:2019
-
-	dynamic_dns {
-		provider duckdns {env.DUCKDNS_API_TOKEN}
-		domains {
-			haivita.duckdns.org *
-		}
-		versions ipv4 ipv6
-	}
-
-	dynamic_dns {
-		provider dynv6 {env.DYNV6_API_TOKEN}
-		domains {
-			haivita.dynv6.net
-		}
-		versions ipv4 ipv6
-	}
-
-	dynamic_dns {
-		provider cloudflare {env.CLOUDFLARE_API_TOKEN}
-		domains {
-			haivita.top *
-			haivita.top @
-		}
-	}
-	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 *.haivita.duckdns.org {
