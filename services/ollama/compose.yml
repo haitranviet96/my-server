@@ -13,7 +13,7 @@ services:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [gpu]
+              capabilities: [ gpu ]
     networks:
       - daimo-dc
 
@@ -33,6 +33,7 @@ services:
 networks:
   daimo-dc:
     name: daimo-dc
+    external: true
 
 volumes:
   ollama: {}

@@ -1,4 +1,3 @@
-
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:1
@@ -15,3 +14,4 @@ services:
 networks:
   daimo-dc:
     name: daimo-dc
+    external: true

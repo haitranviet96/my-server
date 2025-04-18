@@ -24,3 +24,4 @@ services:
 networks:
   daimo-dc:
     name: daimo-dc
+    external: true
