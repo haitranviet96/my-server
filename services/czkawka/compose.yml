@@ -1,0 +1,25 @@
+services:
+  czkawka:
+    image: jlesage/czkawka
+    container_name: czkawka
+    env_file:
+      - ../docker.env
+      - config.env
+      - path: .local.env
+        required: false
+    environment:
+      - DARK_MODE=1
+      - CONTAINER_DEBUG=1
+    ports:
+      - 5800
+    volumes:
+      - /config/czkawka:/config:rw
+      - /media/Data:/storage:rw
+    restart: unless-stopped
+    networks:
+      - daimo-dc
+
+networks:
+  daimo-dc:
+    name: daimo-dc
+    external: true

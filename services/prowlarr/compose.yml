@@ -1,3 +1,5 @@
+name: multimedia
+
 services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest

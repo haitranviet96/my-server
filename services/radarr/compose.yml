@@ -1,3 +1,5 @@
+name: multimedia
+
 services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -6,7 +8,7 @@ services:
       - ../docker.env
     volumes:
       - /config/radarr:/config
-      - /media/Data/media-data:/data
+      - /media/Data/@media:/data
     restart: unless-stopped
     networks:
       - daimo-dc

@@ -12,14 +12,14 @@
 	}
 }
 
-*.haivita.dynv6.net {
-	tls {
-		dns dynv6 {env.DYNV6_API_TOKEN}
-	}
-	handle {
-		respond 404
-	}
-}
+# *.haivita.dynv6.net {
+# 	tls {
+# 		dns dynv6 {env.DYNV6_API_TOKEN}
+# 	}
+# 	handle {
+# 		respond 404
+# 	}
+# }
 
 *.haivita.top {
 	tls {
@@ -30,7 +30,8 @@
 	}
 }
 
-haivita.dynv6.net, haivita.duckdns.org, haivita.top {
+# haivita.dynv6.net,
+haivita.duckdns.org, haivita.top {
 	reverse_proxy homepage:3000
 }
 
@@ -44,6 +45,22 @@ speed.haivita.top {
 
 blog.haivita.top {
 	reverse_proxy ghost:2368
+}
+
+cz.haivita.top {
+	basic_auth {
+		{$caddyfile_auth_user} {$caddyfile_auth_pass}
+	}
+
+	reverse_proxy czkawka:5800
+}
+
+disk.haivita.top {
+	basic_auth {
+		{$caddyfile_auth_user} {$caddyfile_auth_pass}
+	}
+
+	reverse_proxy scrutiny:8080
 }
 
 ddns.haivita.top {
@@ -112,6 +129,10 @@ ollama.haivita.top {
 	}
 
 	reverse_proxy ollama:11434
+}
+
+log.haivita.top {
+	reverse_proxy dozzle:8080
 }
 
 wud.haivita.top {

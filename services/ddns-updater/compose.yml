@@ -1,3 +1,5 @@
+name: webserver
+
 services:
   ddns-updater:
     image: qmcgaw/ddns-updater

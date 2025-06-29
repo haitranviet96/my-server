@@ -1,3 +1,5 @@
+name: multimedia
+
 services:
   jellyseerr:
     image: fallenbagel/jellyseerr:latest

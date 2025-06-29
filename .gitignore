@@ -1,4 +1,6 @@
 **/.decrypted*
 **/*.dev.env
 **/*.local.env
+**/*.local*.yml
 **/*.development.env
+.history

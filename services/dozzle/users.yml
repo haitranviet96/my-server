@@ -1,0 +1,37 @@
+users:
+    admin:
+        email: ENC[AES256_GCM,data:09AI8RF4/YuU8udZwms7bVrpseMAgaQ=,iv:GowbEg1HWXQGCK8YgAJfo9QwmbGsjB0EtAyGasmenHM=,tag:N7TxWBjEgHtkuUXbOuU8sg==,type:str]
+        name: ENC[AES256_GCM,data:GmvsC/q48og=,iv:pLOcdCmiWnMT1kC4agZmyI+lDbEU8oIIrLM9pNguQKU=,tag:t6puVXvWwo1pA1YN1wJwUQ==,type:str]
+        password: ENC[AES256_GCM,data:jcEW12R2w5XBW+n4vu5WixQp9vZtmsWqmU1mfpVxH3NhsgiVcy7JYw9BMafkp1valKudS0LhOWZd3WBI,iv:0h6klLO+xWnDEvcCB9r33I0RTUC9Oyqy3UX5P0DKKu8=,tag:b7hH3RUjHtfD3TQpb6weQw==,type:str]
+        filter: ""
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2025-05-24T07:50:35Z"
+    mac: ENC[AES256_GCM,data:tTuZ+U25LvYWhlfsbFXQMZg0JqB8Ewcaoy0xHOLPckTVFxZ9cyMij86ONIE5mVpIQYwGfAXNbOn7UFjVyuEYBYfHGmsELOhZ/9OAbwef4YL5E22nLaSVESNwZ7qLYeECE18XNK9Ol+M1GkWTPx/Dl6ipPbaorAoa5HjklA1ZVSk=,iv:Jyvb91yVcT7SvnLzuJCdZVquFuPaoqBDcgLwr5gs5aI=,tag:rtlJx2/Z2bt2JuGBfWmZvA==,type:str]
+    pgp:
+        - created_at: "2025-05-24T07:50:35Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1eHMvPjG5BMARAAjurvozEStPnwgbdqTEPd73bX9bS95xnZbkTLGS9T+WVX
+            +T4ZHnIFyqezSeI2yvG8FwjPBI66J5ZXkKknGdvHWA4r/mJBSM7H5IDOtVkVn3U+
+            JLzOkYb59hzSXuimPIu+oC0/7a8g5o9wBOuqBwzuKJSlMbpoHqRXyjXTZ2HWfTlv
+            4dxkOk1dWATStWG8R8GD0repOmVrIznPj6KtfokvoSeF+vR4/cV80R+UuE1yXkxm
+            HNsInabyjTtal0KDJlclE3XFEgc/dMFajK5wzQrSfZWeRQAnTZqykMzCrK/eaXtd
+            W9L4gy3kZZG5bbmfMKYlJSPBME2/MiPelYFnCeD/HXvzcrGMxBnPKYqu3R1+xAEz
+            mTExTy7GyZ28tZOCuWVOHUu3skBpNnkLEwHv+8+LAl3COtWtBNoyj3CnMQvRms7Z
+            gkHoyZKtbkR3OfjWx57lfpUYo8weye98BbbVZadVM4AePQCDLP/Rpdi0x8TNXIqP
+            FvlchLKxLn9ALgsBL8qyciXjLtgDYgZssdizQcCHdJIwSD0jcwOha4GanIC9hPf2
+            2V3cSEBj7iCO01tntXK0KPBErjn+bXk1aIx/p/3GIx/LupKzfP2ZxwWxnAqZ/bmm
+            WYO/HGxRU/1WYFn033d+L9vJEE7ZTHDACw9qKl/5zfX9/Xf2dAeLOunmrUNtxNLS
+            XAEAtrDwL4zqtPOFmTbcBIo+f3fLslZfFsInyP6eOMSIgCJdaUy/1ZHHeDsYD4Ju
+            OwgixkVQEK1u8e+DLQxe8KDyfT4a8MNPq+VxZb4AN23o1wUhAUbN4fFKYRyw
+            =8Vj8
+            -----END PGP MESSAGE-----
+          fp: 8E96E1CC979A93834A5F37AB8D8549888B14F99E
+    unencrypted_suffix: _unencrypted
+    version: 3.8.1

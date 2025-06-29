@@ -1,3 +1,4 @@
+name: multimedia
 
 services:
   qbittorrent:
@@ -12,7 +13,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /config/qbittorrent:/config
-      - /media/Data/media-data:/downloads
+      - /media/Data/@media:/downloads
     ports:
       - 6881:6881
       - 6881:6881/udp

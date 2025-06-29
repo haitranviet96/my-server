@@ -1,3 +1,5 @@
+name: tools
+
 services:
   filebrowser:
     image: filebrowser/filebrowser
@@ -7,8 +9,8 @@ services:
     user: 1000:1000
     volumes:
       - /media/Data:/srv
-      - /config/filebrowser/database.db:/database/filebrowser.db
-      - /config/filebrowser/settings.json:/.filebrowser.json
+      - /config/filebrowser:/database
+      - /config/filebrowser:/config
     restart: unless-stopped
     networks:
       - daimo-dc

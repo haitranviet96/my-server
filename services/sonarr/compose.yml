@@ -1,3 +1,5 @@
+name: multimedia
+
 services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -5,8 +7,8 @@ services:
     env_file:
       - ../docker.env
     volumes:
-      - /config/sonarr:/config
-      - /media/Data/media-data:/data
+      - ${HOME}/.config/sonarr:/config
+      - /media/Data/@media:/data
     restart: unless-stopped
     networks:
       - daimo-dc

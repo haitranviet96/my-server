@@ -1,3 +1,5 @@
+name: webserver
+
 services:
   glances:
     container_name: glances
@@ -10,6 +12,7 @@ services:
       - /media/Data:/Data:ro
       - /root:/Root:ro
       - /home:/Home:ro
+      - /media/BackupDisk:/BackupDisk:ro
     environment:
       - "GLANCES_OPT=-w --password"
     # For nvidia GPUs

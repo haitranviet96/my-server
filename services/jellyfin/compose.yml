@@ -1,3 +1,5 @@
+name: multimedia
+
 services:
   jellyfin:
     image: jellyfin/jellyfin
@@ -7,7 +9,7 @@ services:
       - "105"
     volumes:
       - /config/jellyfin:/config
-      - /media/Data/media-data/media:/media
+      - /media/Data/@media/media:/media
       - ${HOME}/.cache/jellyfin:/cache
     deploy:
       resources:

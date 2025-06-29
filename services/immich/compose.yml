@@ -19,13 +19,15 @@ services:
       # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
-      - /media/Data/Data/Pictures:/home/user/pictures
+      - /media/Data/@archived/Data/Pictures:/home/user/pictures
     env_file:
+      - ../docker.env
       - config.env
       - path: .local.env
         required: false
       # ports:
       # - 2283:3001
+    user: 1000:1000
     depends_on:
       - redis
       - database
