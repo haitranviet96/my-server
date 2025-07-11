@@ -22,6 +22,8 @@ services:
       - multimedia
       - tools
       - webserver
+    labels:
+      - wud.watch=false
 
 networks:
   multimedia:

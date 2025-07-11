@@ -23,6 +23,8 @@ services:
     restart: always
     networks:
       - tools
+    labels:
+      - wud.trigger.exclude=docker.updater
 
 networks:
   tools:

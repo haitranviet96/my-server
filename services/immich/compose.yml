@@ -65,6 +65,8 @@ services:
     restart: always
     networks:
       - tools
+    labels:
+      - wud.watch=false
 
   database:
     container_name: immich_postgres
@@ -86,6 +88,8 @@ services:
     restart: always
     networks:
       - tools
+    labels:
+      - wud.watch=false
 
 volumes:
   model-cache:
