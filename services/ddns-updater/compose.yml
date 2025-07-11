@@ -34,11 +34,11 @@ services:
       - SHOUTRRR_ADDRESSES=
     restart: unless-stopped
     networks:
-      - daimo-dc
+      - webserver
     healthcheck:
       disable: true
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  webserver:
+    name: webserver
     external: true

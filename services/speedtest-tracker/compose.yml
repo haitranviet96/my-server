@@ -16,9 +16,9 @@ services:
     volumes:
       - /config/speedtest-tracker:/config
     networks:
-      - daimo-dc
+      - webserver
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  webserver:
+    name: webserver
     external: true

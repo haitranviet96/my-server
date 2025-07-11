@@ -13,9 +13,9 @@ services:
       - /config/filebrowser:/config
     restart: unless-stopped
     networks:
-      - daimo-dc
+      - tools
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  tools:
+    name: tools
     external: true

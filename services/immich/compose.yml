@@ -35,7 +35,7 @@ services:
     healthcheck:
       disable: false
     networks:
-      - daimo-dc
+      - tools
 
   immich-machine-learning:
     container_name: immich_machine_learning
@@ -55,7 +55,7 @@ services:
     healthcheck:
       disable: false
     networks:
-      - daimo-dc
+      - tools
 
   redis:
     container_name: immich_redis
@@ -64,7 +64,7 @@ services:
       test: redis-cli ping || exit 1
     restart: always
     networks:
-      - daimo-dc
+      - tools
 
   database:
     container_name: immich_postgres
@@ -85,13 +85,13 @@ services:
     command: [ "postgres", "-c", "shared_preload_libraries=vectors.so", "-c", 'search_path="$$user", public, vectors', "-c", "logging_collector=on", "-c", "max_wal_size=2GB", "-c", "shared_buffers=512MB", "-c", "wal_compression=on" ]
     restart: always
     networks:
-      - daimo-dc
+      - tools
 
 volumes:
   model-cache:
 
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  tools:
+    name: tools
     external: true

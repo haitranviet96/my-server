@@ -17,7 +17,7 @@ services:
     volumes:
       - /config/ghost:/var/lib/ghost/content
     networks:
-      - daimo-dc
+      - webserver
 
   ghost-db:
     image: mysql:8.0
@@ -30,13 +30,13 @@ services:
     volumes:
       - db:/var/lib/mysql
     networks:
-      - daimo-dc
+      - webserver
 
 volumes:
   ghost:
   db:
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  webserver:
+    name: webserver
     external: true

@@ -19,11 +19,19 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - daimo-dc
+      - multimedia
+      - tools
+      - webserver
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  multimedia:
+    name: multimedia
+    external: true
+  tools:
+    name: tools
+    external: true
+  webserver:
+    name: webserver
     external: true
 
 volumes:

@@ -22,9 +22,9 @@ services:
       - 3000
     restart: always
     networks:
-      - daimo-dc
+      - tools
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  tools:
+    name: tools
     external: true

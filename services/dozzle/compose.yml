@@ -17,7 +17,7 @@ services:
         target: /data/users.yml
     restart: unless-stopped
     networks:
-      - daimo-dc
+      - tools
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
       interval: 3s
@@ -34,6 +34,6 @@ volumes:
   dozzle:
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  tools:
+    name: tools
     external: true

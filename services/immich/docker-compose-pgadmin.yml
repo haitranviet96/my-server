@@ -15,11 +15,11 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      - daimo-dc
+      - tools
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  tools:
+    name: tools
     external: true
 
 volumes:

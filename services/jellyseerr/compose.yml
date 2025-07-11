@@ -10,9 +10,9 @@ services:
       - /config/jellyseerr:/app/config
     restart: unless-stopped
     networks:
-      - daimo-dc
+      - multimedia
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  multimedia:
+    name: multimedia
     external: true

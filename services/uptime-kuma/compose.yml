@@ -11,9 +11,9 @@ services:
       - 3001
     restart: unless-stopped
     networks:
-      - daimo-dc
+      - webserver
 
 networks:
-  daimo-dc:
-    name: daimo-dc
+  webserver:
+    name: webserver
     external: true

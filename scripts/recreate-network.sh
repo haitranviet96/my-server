@@ -1,2 +1,4 @@
-!/bin/bash
-docker network create --ipv6 --driver=bridge --subnet=192.168.250.0/24 --ip-range=192.168.250.128/25 --gateway=192.168.250.1 daimo-dc
+#!/bin/bash
+docker network create --ipv6 multimedia
+docker network create --ipv6 webserver
+docker network create --ipv6 tools
