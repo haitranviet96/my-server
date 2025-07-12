@@ -5,17 +5,17 @@ services:
     restart: unless-stopped
     ports:
       - 2368
-    env_file:
-      - ../docker.env
+    user: 1000:1000
     environment:
       database__client: mysql
       database__connection__host: ghost-db
       database__connection__user: ${DB_USERNAME}
       database__connection__password: ${DB_PASSWORD}
       database__connection__database: ${DB_DATABASE_NAME}
+      security__staffDeviceVerification: false
       url: https://blog.haivita.top
     volumes:
-      - /config/ghost:/var/lib/ghost/content
+      - ${HOME}/.config/ghost/content:/var/lib/ghost/content
     networks:
       - webserver
 
@@ -23,20 +23,15 @@ services:
     image: mysql:8.0
     container_name: ghost-db
     restart: unless-stopped
-    env_file:
-      - ../docker.env
+    user: 1000:1000
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - db:/var/lib/mysql
+      - ${HOME}/.config/ghost/db:/var/lib/mysql
     networks:
       - webserver
     labels:
       - wud.watch=false
-
-volumes:
-  ghost:
-  db:
 
 networks:
   webserver:
