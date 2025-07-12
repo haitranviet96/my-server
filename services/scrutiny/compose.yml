@@ -6,6 +6,7 @@ services:
     image: ghcr.io/analogj/scrutiny:master-omnibus
     cap_add:
       - SYS_RAWIO
+      - SYS_ADMIN
     ports:
       - 8080 # webapp
       - 8086 # influxDB admin
@@ -18,6 +19,8 @@ services:
       - "/dev/sdb"
       - "/dev/sdc"
       - "/dev/sdd"
+      - "/dev/sde"
+      - "/dev/nvme0"
     restart: unless-stopped
     networks:
       - tools
