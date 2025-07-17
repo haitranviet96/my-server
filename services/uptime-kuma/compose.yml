@@ -2,11 +2,11 @@ name: webserver
 
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma:beta
     container_name: uptime-kuma
+    user: 1000:1000
     volumes:
-      - /config/uptime-kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/.config/uptime-kuma:/app/data
     ports:
       - 3001
     restart: unless-stopped

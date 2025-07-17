@@ -14,7 +14,7 @@ services:
       - path: .local.env
         required: false
     volumes:
-      - /config/speedtest-tracker:/config
+      - ${HOME}/.config/speedtest-tracker:/config
     networks:
       - webserver
 

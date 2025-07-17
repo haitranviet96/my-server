@@ -7,12 +7,10 @@ services:
     env_file:
       - ../docker.env
     environment:
-      - PUID=1000
-      - PGID=1000
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - /config/qbittorrent:/config
+      - ${HOME}/.config/qbittorrent:/config
       - /media/Data/@media:/downloads
     ports:
       - 6881:6881

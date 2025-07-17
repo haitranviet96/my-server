@@ -7,7 +7,7 @@ services:
     env_file:
       - ../docker.env
     volumes:
-      - /config/prowlarr:/config
+      - ${HOME}/.config/prowlarr:/config
     restart: unless-stopped
     networks:
       - multimedia

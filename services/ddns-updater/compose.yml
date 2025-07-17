@@ -7,7 +7,7 @@ services:
     ports:
       - 8000
     volumes:
-      - /config/ddns-updater:/updater/data
+      - ${HOME}/.config/ddns-updater:/updater/data
     environment:
       - CONFIG=
       - PERIOD=5m

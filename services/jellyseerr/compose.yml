@@ -4,10 +4,11 @@ services:
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
-    env_file:
-      - ../docker.env
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    user: 1000:1000
     volumes:
-      - /config/jellyseerr:/app/config
+      - ${HOME}/.config/jellyseerr:/app/config
     restart: unless-stopped
     networks:
       - multimedia

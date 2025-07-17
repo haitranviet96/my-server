@@ -4,13 +4,11 @@ services:
   filebrowser:
     image: filebrowser/filebrowser
     container_name: filebrowser
-    env_file:
-      - ../docker.env
     user: 1000:1000
     volumes:
       - /media/Data:/srv
-      - /config/filebrowser:/database
-      - /config/filebrowser:/config
+      - ${HOME}/.config/filebrowser:/database
+      - ${HOME}/.config/filebrowser:/config
     restart: unless-stopped
     networks:
       - tools

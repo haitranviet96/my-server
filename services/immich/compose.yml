@@ -46,6 +46,7 @@ services:
       # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
       file: hwaccel.ml.yml
       service: cuda # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+    user: 1000:1000
     volumes:
       - model-cache:/cache
     env_file:

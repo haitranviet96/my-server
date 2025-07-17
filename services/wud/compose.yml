@@ -6,7 +6,6 @@ services:
     container_name: wud
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${HOME}/.config/wud:/store
     env_file:
       - ../docker.env
       - config.env
@@ -20,7 +19,7 @@ services:
       start_period: 10s
     ports:
       - 3000
-    restart: always
+    restart: unless-stopped
     networks:
       - tools
     labels:
