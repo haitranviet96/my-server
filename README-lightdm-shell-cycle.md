@@ -25,6 +25,11 @@ This guide describes how to set up a LightDM-based login loop that:
 ```bash
 sudo dnf install lightdm lightdm-gtk-greeter
 sudo systemctl enable lightdm.service
+``` 
+
+Remember to register it to start with the system
+```bash
+sudo systemctl set-default graphical.target
 ```
 
 ---
@@ -199,6 +204,15 @@ To debug `.zlogout`, add:
 echo "[.zlogout] tty=$(tty), user=$USER, state=$(systemctl is-system-running)" >> ~/.zlogout.log
 ```
 
+Use `socat` to log LightDM <-> X startup
+To confirm if the issue is the greeter not talking to X properly, you can look at:
+
+```bash
+cat /var/log/lightdm/lightdm.log
+cat ~/.xsession-errors
+journalctl -u lightdm
+```
+
 ---
 
 ## ✅ Behavior Summary
@@ -216,10 +230,15 @@ echo "[.zlogout] tty=$(tty), user=$USER, state=$(systemctl is-system-running)" >
 
 To revert the setup:
 - Set LightDM to default session again
+- `sudo dnf remove xorg-x11-server-Xorg xset xinit`
 - Remove `/usr/share/xsessions/shellsession.desktop`
 - Remove `/usr/local/bin/lightdm-shellswitch.sh`
 - Remove `~/.zlogout` logic
-- Disable LightDM service
+- Remove `/etc/systemd/system/tty1-autologin.service`
+- Remove `/usr/local/bin/lightdm-dpms.sh`
+- Remove `/etc/lightdm/lightdm.conf.d/60-dpms.conf`
+- Disable & Remove LightDM service `sudo systemctl disable lightdm`
+- Rollback graphical target `sudo systemctl set-default default.target`
 
 ---
 
