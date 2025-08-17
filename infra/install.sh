@@ -15,11 +15,11 @@ parted --align optimal --script "$DISK" \
   mkpart primary 512MiB 100%
 
 # === Format ===
-mkfs.fat -F32 "${DISK}p1"
-mkfs.btrfs -f "${DISK}p2"
+mkfs.fat -F32 "${DISK}1"
+mkfs.btrfs -f "${DISK}2"
 
 # === Btrfs subvolumes ===
-mount "${DISK}p2" /mnt
+mount "${DISK}2" /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@nix
@@ -29,14 +29,14 @@ btrfs subvolume create /mnt/@snapshots
 umount /mnt
 
 # === Mount subvolumes ===
-mount -o subvol=@,compress=zstd "${DISK}p2" /mnt
+mount -o subvol=@,compress=zstd "${DISK}2" /mnt
 mkdir -p /mnt/{boot,home,nix,var,log,.snapshots}
-mount -o subvol=@home,compress=zstd "${DISK}p2" /mnt/home
-mount -o subvol=@nix,compress=zstd  "${DISK}p2" /mnt/nix
-mount -o subvol=@var,compress=zstd  "${DISK}p2" /mnt/var
-mount -o subvol=@log,compress=zstd  "${DISK}p2" /mnt/log
-mount -o subvol=@snapshots,compress=zstd  "${DISK}p2" /mnt/.snapshots
-mount "${DISK}p1" /mnt/boot
+mount -o subvol=@home,compress=zstd "${DISK}2" /mnt/home
+mount -o subvol=@nix,compress=zstd  "${DISK}2" /mnt/nix
+mount -o subvol=@var,compress=zstd  "${DISK}2" /mnt/var
+mount -o subvol=@log,compress=zstd  "${DISK}2" /mnt/log
+mount -o subvol=@snapshots,compress=zstd  "${DISK}2" /mnt/.snapshots
+mount "${DISK}1" /mnt/boot
 
 # === NixOS Install via Flake ===
 # nixos-install --flake "$FLAKE" --root /mnt --no-root-passwd
