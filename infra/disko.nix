@@ -6,8 +6,7 @@
       type = "gpt";
       partitions = {
         ESP = {
-          start = "1MiB";
-          end = "512MiB";
+          size = "512M";
           type = "EF00";
           content = {
             type = "filesystem";
@@ -17,8 +16,7 @@
           };
         };
         root = {
-          start = "512MiB";
-          end = "100%";
+          size = "100%";
           content = {
             type = "btrfs";
             extraArgs = [ "-f" ];
