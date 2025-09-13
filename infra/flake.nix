@@ -38,6 +38,18 @@
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
               boot.loader.efi.canTouchEfiVariables = true;
+              
+              # Debug options
+              boot.kernelParams = [
+                "systemd.log_level=debug"
+                "systemd.log_target=console"
+                "console=tty0"
+                "boot.shell_on_fail"
+              ];
+              
+              # Initrd debugging
+              boot.initrd.systemd.enable = true;
+              boot.initrd.verbose = true;
 
               # users
               users.users.haitv = {
