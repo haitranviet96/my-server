@@ -19,8 +19,6 @@
       nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          ./hosts/mydinh-dc/hardware-configuration.nix
-          ./hosts/mydinh-dc/configuration.nix
           ./disko.nix
           disko.nixosModules.disko
 
@@ -33,6 +31,9 @@
                 "flakes"
               ];
               time.timeZone = "Asia/Bangkok";
+
+              # System state version
+              system.stateVersion = "25.05";
 
               # users
               users.users.haitv = {

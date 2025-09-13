@@ -7,7 +7,7 @@ HOSTNAME="nixos"
 USERNAME="haitv"
 
 # === Install NixOS with disko-install ===
-sudo nix run 'github:nix-community/disko/latest#disko-install' -- --flake .#myserver --disk main "$DISK"
+sudo nix --extra-experimental-features "nix-command flakes" run 'github:nix-community/disko/latest#disko-install' -- --flake .#myserver --disk main "$DISK"
 
 # === Set root password after first boot ===
 echo ">>> Installation complete. Reboot, then run 'passwd' to set root password."

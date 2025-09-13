@@ -1,6 +1,6 @@
 {
-  disko.devices.disk.vda = {
-    device = "/dev/vda"; # adjust for your system (e.g. /dev/sda or /dev/nvme0n1)
+  disko.devices.disk.main = {
+    device = "/dev/vda"; # Will be overridden by disko-install
     type = "disk";
     content = {
       type = "gpt";
