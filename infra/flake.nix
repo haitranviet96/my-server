@@ -35,6 +35,9 @@
               # System state version
               system.stateVersion = "25.05";
 
+              # Hardware configuration
+              hardware.enableAllHardware = true;
+
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
               boot.loader.efi.canTouchEfiVariables = true;
