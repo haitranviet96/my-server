@@ -6,14 +6,13 @@ DISK="/dev/vda"                # change this (e.g. /dev/sda or /dev/nvme0n1)
 HOSTNAME="nixos"
 USERNAME="haitv"
 
-# === Partition and format with disko ===
-sudo nix --extra-experimental-features "nix-command flakes" run 'github:nix-community/disko/latest' -- --mode destroy,format,mount ./disko.nix --arg device '"'$DISK'"'
+# === Install NixOS with disko-install ===
+sudo nix --extra-experimental-features "nix-command flakes" run 'github:nix-community/disko/latest#disko-install' -- --flake .#myserver --disk main "$DISK"
 
-# === Generate hardware configuration ===
-sudo nixos-generate-config --root /mnt
-
-# === Install NixOS ===
-sudo nixos-install --flake .#myserver --root /mnt --no-root-passwd
+# === Set user password after installation ===
+echo ">>> Setting password for user: $USERNAME"
+echo ">>> Please enter password for user $USERNAME:"
+sudo chroot /mnt passwd $USERNAME
 
 # === Set root password after first boot ===
 echo ">>> Installation complete. Reboot, then run 'passwd' to set root password."
