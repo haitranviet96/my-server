@@ -38,15 +38,36 @@
               # Hardware configuration
               hardware.enableAllHardware = true;
 
+              # Console-only system (no GUI)
+              services.xserver.enable = false;
+              services.displayManager.enable = false;
+              boot.plymouth.enable = false;
+
+              # Console configuration
+              console = {
+                enable = true;
+                font = "Lat2-Terminus16";
+                keyMap = "us";
+              };
+
+              # Enable getty on tty1-6
+              systemd.services."getty@tty1".enable = true;
+              systemd.services."getty@tty2".enable = true;
+              systemd.services."getty@tty3".enable = true;
+              systemd.services."getty@tty4".enable = true;
+              systemd.services."getty@tty5".enable = true;
+              systemd.services."getty@tty6".enable = true;
+
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
               boot.loader.efi.canTouchEfiVariables = true;
               
-              # Debug options
+              # Debug options and console configuration
               boot.kernelParams = [
-                "systemd.log_level=debug"
-                "systemd.log_target=console"
                 "console=tty0"
+                "console=ttyS0,115200n8"
+                "systemd.log_level=info"
+                "systemd.log_target=console"
                 "boot.shell_on_fail"
               ];
               
