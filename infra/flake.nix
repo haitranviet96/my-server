@@ -61,7 +61,7 @@
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
               boot.loader.efi.canTouchEfiVariables = true;
-              
+
               # Debug options and console configuration
               boot.kernelParams = [
                 "console=tty0"
@@ -78,6 +78,7 @@
               # users
               users.users.haitv = {
                 isNormalUser = true;
+                hashedPassword = "$6$wV.gZ4G6JUE3gikF$OioZi5wbTtZeR31NDgwzqoKC1sAho5qJxttuUE82u/0EBiN9WoBedbMehGPt/kvkzd9lIuHKhgLd0022wBjOJ0";
                 extraGroups = [
                   "wheel"
                   "networkmanager"
@@ -89,7 +90,16 @@
                 ];
               };
 
-              services.openssh.enable = true;
+              # SSH configuration - key-only authentication
+              services.openssh = {
+                enable = true;
+                settings = {
+                  PasswordAuthentication = false;
+                  PermitRootLogin = "no";
+                  KbdInteractiveAuthentication = false;
+                  PermitEmptyPasswords = false;
+                };
+              };
 
               # firewall
               networking.firewall = {
