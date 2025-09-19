@@ -70,7 +70,7 @@
                 "systemd.log_target=console"
                 "boot.shell_on_fail"
               ];
-              
+
               # Initrd debugging
               boot.initrd.systemd.enable = true;
               boot.initrd.verbose = true;
@@ -135,6 +135,9 @@
               # libvirt/KVM for VMs
               virtualisation.libvirtd.enable = true;
               programs.virt-manager.enable = true;
+
+              # Enable nix-ld for FHS compatibility
+              programs.nix-ld.enable = true;
 
               # housekeeping
               nix.gc = {
