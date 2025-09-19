@@ -101,6 +101,12 @@
                 };
               };
 
+              # Tailscale VPN
+              services.tailscale = {
+                enable = true;
+                useRoutingFeatures = "server";
+              };
+
               # firewall
               networking.firewall = {
                 enable = true;
@@ -109,6 +115,9 @@
                   80
                   443
                 ];
+                # Allow Tailscale traffic
+                trustedInterfaces = [ "tailscale0" ];
+                allowedUDPPorts = [ config.services.tailscale.port ];
               };
 
               # system packages
@@ -117,6 +126,7 @@
                 vim
                 curl
                 wget
+                tailscale
               ];
 
               # containers (Podman or Docker)
