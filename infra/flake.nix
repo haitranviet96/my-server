@@ -6,6 +6,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # pinned channel
     flake-utils.url = "github:numtide/flake-utils";
     disko.url = "github:nix-community/disko";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
   outputs =
@@ -14,6 +15,7 @@
       nixpkgs,
       flake-utils,
       disko,
+      sops-nix,
     }:
     {
       nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
@@ -21,6 +23,7 @@
         modules = [
           ./disko.nix
           disko.nixosModules.disko
+          sops-nix.nixosModules.sops
 
           # main server config
           (
@@ -40,40 +43,11 @@
 
               # Console-only system (no GUI)
               services.xserver.enable = false;
-              services.displayManager.enable = false;
               boot.plymouth.enable = false;
-
-              # Console configuration
-              console = {
-                enable = true;
-                font = "Lat2-Terminus16";
-                keyMap = "us";
-              };
-
-              # Enable getty on tty1-6
-              systemd.services."getty@tty1".enable = true;
-              systemd.services."getty@tty2".enable = true;
-              systemd.services."getty@tty3".enable = true;
-              systemd.services."getty@tty4".enable = true;
-              systemd.services."getty@tty5".enable = true;
-              systemd.services."getty@tty6".enable = true;
 
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
               boot.loader.efi.canTouchEfiVariables = true;
-
-              # Debug options and console configuration
-              boot.kernelParams = [
-                "console=tty0"
-                "console=ttyS0,115200n8"
-                "systemd.log_level=info"
-                "systemd.log_target=console"
-                "boot.shell_on_fail"
-              ];
-
-              # Initrd debugging
-              boot.initrd.systemd.enable = true;
-              boot.initrd.verbose = true;
 
               # users
               users.users.haitv = {
@@ -114,6 +88,8 @@
                   22
                   80
                   443
+                  20443 # speedtest-tracker HTTPS
+                  23001 # uptime-kuma HTTPS
                 ];
                 # Allow Tailscale traffic
                 trustedInterfaces = [ "tailscale0" ];
@@ -122,22 +98,61 @@
 
               # system packages
               environment.systemPackages = with pkgs; [
-                git
+                inetutils
                 vim
                 curl
                 wget
                 tailscale
+                nixfmt-rfc-style
+                btop-cuda
+                gnupg
+                sops
+                age
               ];
 
               # containers (Podman or Docker)
               virtualisation.docker.enable = true;
+              virtualisation.oci-containers.backend = "docker";
 
-              # libvirt/KVM for VMs
-              virtualisation.libvirtd.enable = true;
-              programs.virt-manager.enable = true;
+              # Enable virtualization stack
+              virtualisation.libvirtd = {
+                enable = true;
+                qemu = {
+                  package = pkgs.qemu_kvm;
+                  runAsRoot = true;
+                  swtpm.enable = true;
+                  ovmf = {
+                    enable = true;
+                    packages = [
+                      (pkgs.OVMF.override {
+                        secureBoot = true;
+                        tpmSupport = true;
+                      }).fd
+                    ];
+                  };
+                };
+              };
 
               # Enable nix-ld for FHS compatibility
               programs.nix-ld.enable = true;
+
+              # GPG configuration
+              programs.gnupg.agent = {
+                enable = true;
+                pinentryPackage = pkgs.pinentry-curses; # For headless server
+              };
+
+              # Git configuration
+              programs.git = {
+                enable = true;
+                config = {
+                  user = {
+                    name = "Hai Tran";
+                    email = "haitranviet96@gmail.com";
+                  };
+                  credential.helper = "store";
+                };
+              };
 
               # housekeeping
               nix.gc = {
@@ -148,17 +163,26 @@
 
               # backups/snapshots if using btrfs
               services.snapper = {
-                snapshotRootOnBoot = true;
-                configs.root = {
-                  SUBVOLUME = "/";
-                  ALLOW_USERS = [ "haitv" ];
-                  TIMELINE_CREATE = true;
-                  TIMELINE_CLEANUP = true;
-                  TIMELINE_MIN_AGE = "1800s";
-                  TIMELINE_LIMIT_HOURLY = 8;
-                  TIMELINE_LIMIT_DAILY = 7;
-                  TIMELINE_LIMIT_WEEKLY = 4;
-                  TIMELINE_LIMIT_MONTHLY = 3;
+                configs = {
+                  root = {
+                    SUBVOLUME = "/";
+                    ALLOW_USERS = [ "haitv" ];
+                    TIMELINE_CREATE = true;
+                    TIMELINE_CLEANUP = true;
+                    TIMELINE_MIN_AGE = "86400s"; # 24 hours
+                    TIMELINE_LIMIT_DAILY = 7;
+                    TIMELINE_LIMIT_WEEKLY = 1;
+                  };
+                  home = {
+                    SUBVOLUME = "/home";
+                    ALLOW_USERS = [ "haitv" ];
+                    TIMELINE_CREATE = true;
+                    TIMELINE_CLEANUP = true;
+                    TIMELINE_MIN_AGE = "86400s"; # 24 hours
+                    TIMELINE_LIMIT_DAILY = 7;
+                    TIMELINE_LIMIT_WEEKLY = 3;
+                    TIMELINE_LIMIT_MONTHLY = 1;
+                  };
                 };
               };
             }
