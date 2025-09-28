@@ -40,7 +40,11 @@ trade.haivita.top {
 }
 
 speed.haivita.top {
-	reverse_proxy speedtest-tracker:80
+	reverse_proxy https://192.168.150.6:20443 {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
 }
 
 blog.haivita.top {
@@ -120,7 +124,7 @@ chat.haivita.top {
 }
 
 up.haivita.top {
-	reverse_proxy uptime-kuma:3001
+	reverse_proxy 192.168.150.6:23001
 }
 
 ollama.haivita.top {
