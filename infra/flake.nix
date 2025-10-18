@@ -6,7 +6,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # pinned channel
     flake-utils.url = "github:numtide/flake-utils";
     disko.url = "github:nix-community/disko";
-    sops-nix.url = "github:Mic92/sops-nix";
   };
 
   outputs =
@@ -15,7 +14,6 @@
       nixpkgs,
       flake-utils,
       disko,
-      sops-nix,
     }:
     {
       nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
@@ -23,11 +21,10 @@
         modules = [
           ./disko.nix
           disko.nixosModules.disko
-          sops-nix.nixosModules.sops
 
           # main server config
           (
-            { config, pkgs, ... }:
+            { config, pkgs, lib, ... }:
             {
               nix.settings.experimental-features = [
                 "nix-command"
@@ -35,11 +32,42 @@
               ];
               time.timeZone = "Asia/Bangkok";
 
+              # Allow unfree packages (needed for NVIDIA drivers)
+              nixpkgs.config.allowUnfree = true;
+
               # System state version
               system.stateVersion = "25.05";
 
               # Hardware configuration
               hardware.enableAllHardware = true;
+
+              # NVIDIA drivers
+              services.xserver.videoDrivers = [ "nvidia" ];
+              hardware.nvidia = {
+                # Modesetting is required for most recent NVIDIA GPUs
+                modesetting.enable = true;
+
+                # Enable the Nvidia settings menu accessible via `nvidia-settings`
+                nvidiaSettings = false; # Set to false for headless server
+
+                # Optionally, you may need to select the appropriate driver version for your GPU
+                # package = config.boot.kernelPackages.nvidiaPackages.stable;
+
+                # Enable NVIDIA Power Management (for newer GPUs)
+                powerManagement.enable = true;
+                powerManagement.finegrained = false;
+
+                # Use open source kernel module (recommended for RTX/GTX 16xx and newer)
+                # Set to false if you have older GPUs or encounter issues
+                open = true;
+              };
+
+              # Enable CUDA support
+              hardware.nvidia-container-toolkit.enable = true;
+              hardware.graphics = {
+                enable = true;
+                enable32Bit = true;
+              };
 
               # Console-only system (no GUI)
               services.xserver.enable = false;
@@ -108,6 +136,7 @@
                 gnupg
                 sops
                 age
+                pciutils # for lspci command
               ];
 
               # containers (Podman or Docker)
@@ -153,6 +182,70 @@
                   credential.helper = "store";
                 };
               };
+
+              # GitHub Actions Runners
+              services.github-runners = let
+                # Number of runners to create (easily configurable)
+                runnerCount = 3;
+                
+                # Generate runners dynamically
+                generateRunners = count: builtins.listToAttrs (
+                  map (i: let
+                    runnerName = "runner-${toString i}";
+                  in {
+                    name = runnerName;
+                    value = {
+                      enable = true;
+                      url = "https://github.com/haitranviet96/my-server";
+                      tokenFile = "/run/secrets/gh_pat";
+                      ephemeral = true;
+                      replace = true;
+                      name = "nixos-${runnerName}";
+                      
+                      extraLabels = [ 
+                        "nixos" 
+                        "docker" 
+                        "self-hosted" 
+                        "ephemeral" 
+                        "instance-${toString i}"
+                        "cuda"
+                      ];
+                      
+                      extraPackages = with pkgs; [
+                        docker docker-compose git curl wget jq
+                        nodejs_20 python3 gcc gnumake
+                      ];
+                      
+                      serviceOverrides = {
+                        SupplementaryGroups = [ "docker" ];
+                        Restart = pkgs.lib.mkForce "always";
+                        RestartSec = "10s";
+                        
+                        # Cleanup before each job
+                        ExecStartPre = [
+                          "${pkgs.docker}/bin/docker system prune -f --volumes"
+                        ];
+                        
+                        # Resource limits
+                        MemoryMax = "6G";
+                        CPUQuota = "300%";
+                        
+                        # Security
+                        NoNewPrivileges = true;
+                        PrivateTmp = true;
+                      };
+                    };
+                  }) (builtins.genList (i: i + 1) count)
+                );
+              in generateRunners runnerCount;
+
+              # Ensure the github-runner user exists and is in docker group
+              users.users.github-runner = {
+                isSystemUser = true;
+                group = "github-runner";
+                extraGroups = [ "docker" ];
+              };
+              users.groups.github-runner = {};
 
               # housekeeping
               nix.gc = {

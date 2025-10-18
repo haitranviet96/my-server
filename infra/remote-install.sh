@@ -39,6 +39,8 @@ SSH_CONFIG_HOST=""
 USE_SSH_CONFIG=false
 FLAKE_CONFIG="myserver"
 NIXOS_USERNAME="haitv"
+GITHUB_PAT=""
+GPG_KEY_PATH=""
 
 # === Usage function ===
 usage() {
@@ -56,13 +58,18 @@ OPTIONS:
   -d, --disk      Target disk device (default: /dev/vda)
   -k, --key       SSH private key path (default: auto-detect or from SSH config)
   -f, --flake     Flake configuration name (default: myserver)
+  --nixos-user    NixOS username (default: haitv)
+  --github-pat    GitHub Personal Access Token (will be saved to /run/secrets/gh_pat)
+  --gpg-key       Path to DC_ENCODE GPG private key (will be saved to /run/secrets/private_DC_ENCODE_key.asc)
   -h, --help      Show this help message
 
 EXAMPLES:
-  $0 myserver-host              # Use SSH config entry
+  $0 myserver-host              # Use SSH config entry, prompt for all config
   $0 192.168.1.100              # Auto-detect key or prompt for setup
   $0 -k ~/.ssh/custom_key 192.168.1.100
   $0 -u installer -d /dev/sda myserver
+  $0 --github-pat "ghp_xxx" --gpg-key /path/to/key.asc myserver
+  $0 --nixos-user myuser myserver-host
 
 AUTHENTICATION PRIORITY:
   1. SSH config host (if TARGET_HOST matches ~/.ssh/config entry)
@@ -99,6 +106,18 @@ parse_args() {
                 FLAKE_CONFIG="$2"
                 shift 2
                 ;;
+            --nixos-user)
+                NIXOS_USERNAME="$2"
+                shift 2
+                ;;
+            --github-pat)
+                GITHUB_PAT="$2"
+                shift 2
+                ;;
+            --gpg-key)
+                GPG_KEY_PATH="$2"
+                shift 2
+                ;;
             -h|--help)
                 usage
                 exit 0
@@ -125,6 +144,152 @@ parse_args() {
         usage
         exit 1
     fi
+}
+
+# === Search for files in multiple locations ===
+search_file_in_locations() {
+    local file_name="$1"
+    local search_locations=(
+        "$(pwd)/$file_name"                    # Current folder
+        "$HOME/$file_name"                     # Current home
+    )
+    
+    for location in "${search_locations[@]}"; do
+        if [[ -f "$location" ]]; then
+            echo "$location"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+# === Check GitHub PAT file ===
+check_github_pat() {
+    log_info "Checking for GitHub PAT file..."
+    
+    # If already provided via command line, use it
+    if [[ -n "$GITHUB_PAT" ]]; then
+        log_success "GitHub PAT provided via command line"
+        return 0
+    fi
+    
+    # Search for gh_pat file in common locations
+    local pat_file
+    pat_file=$(search_file_in_locations "gh_pat")
+    
+    if [[ -n "$pat_file" ]]; then
+        log_success "Found GitHub PAT file at: $pat_file"
+        GITHUB_PAT=$(cat "$pat_file")
+        if [[ -z "$GITHUB_PAT" ]]; then
+            log_error "GitHub PAT file is empty: $pat_file"
+            return 1
+        fi
+        return 0
+    fi
+    
+    # Not found in any location
+    log_error "GitHub PAT file not found in:"
+    log_error "  - Current folder: ./gh_pat"
+    log_error "  - Home folder: $HOME/gh_pat"
+    log_error ""
+    log_error "Please create the file with your GitHub PAT and try again."
+    log_error "Usage: echo 'ghp_xxx' > ./gh_pat or echo 'ghp_xxx' > ~/$HOME/gh_pat"
+    return 1
+}
+
+# === Check GPG key file on remote system ===
+check_remote_gpg_key() {
+    local ssh_cmd="$1"
+    
+    log_info "Checking for GPG key on remote system..."
+    
+    local remote_locations=(
+        "/root/gh_pat"                          # Remote root
+        "/home/root/gh_pat"                     # Remote root home
+        "~/private_DC_ENCODE_key.asc"           # Remote home
+        "/root/private_DC_ENCODE_key.asc"       # Remote root
+    )
+    
+    for location in "${remote_locations[@]}"; do
+        if $ssh_cmd "[[ -f '$location' ]]" 2>/dev/null; then
+            echo "$location"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+# === Check GPG key file ===
+check_gpg_key() {
+    log_info "Checking for DC_ENCODE GPG key file..."
+    
+    # If already provided via command line, use it
+    if [[ -n "$GPG_KEY_PATH" ]]; then
+        if [[ -f "$GPG_KEY_PATH" ]]; then
+            log_success "GPG key provided via command line: $GPG_KEY_PATH"
+            return 0
+        else
+            log_error "GPG key file not found: $GPG_KEY_PATH"
+            return 1
+        fi
+    fi
+    
+    # Search for private_DC_ENCODE_key.asc file in common locations
+    local gpg_file
+    gpg_file=$(search_file_in_locations "private_DC_ENCODE_key.asc")
+    
+    if [[ -n "$gpg_file" ]]; then
+        log_success "Found GPG key file at: $gpg_file"
+        GPG_KEY_PATH="$gpg_file"
+        if [[ ! -s "$GPG_KEY_PATH" ]]; then
+            log_error "GPG key file is empty: $GPG_KEY_PATH"
+            return 1
+        fi
+        return 0
+    fi
+    
+    # Not found in any location
+    log_error "GPG key file not found in:"
+    log_error "  - Current folder: ./private_DC_ENCODE_key.asc"
+    log_error "  - Home folder: $HOME/private_DC_ENCODE_key.asc"
+    log_error ""
+    log_error "Please export your GPG key or place it in one of the above locations."
+    log_error "To export: gpg --export-secret-keys --armor DC_ENCODE > private_DC_ENCODE_key.asc"
+    return 1
+}
+
+# === Prompt for required configuration ===
+prompt_for_configuration() {
+    log_info "Collecting configuration information..."
+    echo
+
+    # Prompt for TARGET_USER if default is still set
+    read -p "SSH user for initial connection (default: $TARGET_USER): " input_user
+    if [[ -n "$input_user" ]]; then
+        TARGET_USER="$input_user"
+    fi
+
+    # Prompt for TARGET_DISK
+    read -p "Target disk device (default: $TARGET_DISK): " input_disk
+    if [[ -n "$input_disk" ]]; then
+        TARGET_DISK="$input_disk"
+    fi
+
+    # Prompt for FLAKE_CONFIG
+    read -p "Flake configuration name (default: $FLAKE_CONFIG): " input_flake
+    if [[ -n "$input_flake" ]]; then
+        FLAKE_CONFIG="$input_flake"
+    fi
+
+    # Prompt for NIXOS_USERNAME
+    read -p "NixOS username (default: $NIXOS_USERNAME): " input_nixos_user
+    if [[ -n "$input_nixos_user" ]]; then
+        NIXOS_USERNAME="$input_nixos_user"
+    fi
+
+    echo
 }
 
 # === SSH configuration detection ===
@@ -271,6 +436,16 @@ validate_prerequisites() {
         exit 1
     fi
 
+    # Check for GitHub PAT file
+    if ! check_github_pat; then
+        exit 1
+    fi
+
+    # Check for GPG key file
+    if ! check_gpg_key; then
+        exit 1
+    fi
+
     # Detect SSH configuration
     if ! detect_ssh_config "$TARGET_HOST"; then
         log_info "No SSH config entry found for '$TARGET_HOST'"
@@ -356,7 +531,9 @@ prepare_remote_system() {
     fi
 
     # Enable experimental features and ensure git is available
-    $ssh_cmd << 'EOF'
+    $ssh_cmd bash -s "$TARGET_DISK" << 'EOF'
+        TARGET_DISK="$1"
+        
         # Enable experimental features
         mkdir -p /etc/nix
         echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
@@ -371,9 +548,73 @@ prepare_remote_system() {
             echo "Warning: Target disk $TARGET_DISK not found"
             lsblk
         fi
+
+        # Create secrets directory
+        mkdir -p /run/secrets
+        chmod 700 /run/secrets
 EOF
 
     log_success "Remote system prepared"
+}
+
+# === Setup secrets on remote system ===
+setup_remote_secrets() {
+    log_info "Setting up secrets on remote system..."
+    
+    local scp_cmd
+    if [[ "$USE_SSH_CONFIG" == "true" ]]; then
+        scp_cmd="scp"
+        local remote_target="$SSH_CONFIG_HOST"
+    else
+        local ssh_opts="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        if [[ -n "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH" ]]; then
+            ssh_opts="$ssh_opts -i $SSH_KEY_PATH"
+        fi
+        scp_cmd="scp $ssh_opts"
+        local remote_target="$TARGET_USER@$TARGET_HOST"
+    fi
+
+    # Copy GitHub PAT to remote
+    log_info "Copying GitHub PAT to remote system..."
+    if $scp_cmd "$GITHUB_PAT" "${remote_target}:/run/secrets/gh_pat"; then
+        log_success "GitHub PAT uploaded successfully"
+    else
+        log_error "Failed to upload GitHub PAT"
+        return 1
+    fi
+
+    # Copy GPG key to remote
+    log_info "Copying DC_ENCODE GPG key to remote system..."
+    if $scp_cmd "$GPG_KEY_PATH" "${remote_target}:/run/secrets/private_DC_ENCODE_key.asc"; then
+        log_success "GPG key uploaded successfully"
+    else
+        log_error "Failed to upload GPG key"
+        return 1
+    fi
+
+    # Set proper permissions on remote secrets
+    local ssh_cmd
+    if [[ "$USE_SSH_CONFIG" == "true" ]]; then
+        ssh_cmd="ssh $SSH_CONFIG_HOST"
+    else
+        local ssh_opts="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        if [[ -n "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH" ]]; then
+            ssh_opts="$ssh_opts -i $SSH_KEY_PATH"
+        fi
+        ssh_cmd="ssh $ssh_opts $TARGET_USER@$TARGET_HOST"
+    fi
+
+    $ssh_cmd << 'EOF'
+        chmod 600 /run/secrets/gh_pat
+        chmod 600 /run/secrets/private_DC_ENCODE_key.asc
+        
+        # Import GPG key for sops
+        if command -v gpg &> /dev/null; then
+            gpg --import /run/secrets/private_DC_ENCODE_key.asc 2>/dev/null || true
+        fi
+EOF
+
+    log_success "Secrets configured on remote system"
 }
 
 # === Main installation function ===
@@ -476,7 +717,10 @@ verify_installation() {
 # === Cleanup function ===
 cleanup() {
     log_info "Cleaning up temporary files..."
-    # Add any cleanup operations here if needed
+    # Remove temporary GPG key export if it exists
+    if [[ -f "/tmp/private_DC_ENCODE_key_export.asc" ]]; then
+        rm -f "/tmp/private_DC_ENCODE_key_export.asc"
+    fi
 }
 
 # === Main execution ===
@@ -485,6 +729,9 @@ main() {
     log_info "================================================"
 
     parse_args "$@"
+    
+    # Prompt for any missing configuration
+    prompt_for_configuration
     
     # Display configuration
     cat << EOF
@@ -495,6 +742,8 @@ Configuration:
   Target Disk:     $TARGET_DISK
   Flake Config:    $FLAKE_CONFIG
   NixOS User:      $NIXOS_USERNAME
+  GitHub PAT:      <hidden>
+  GPG Key:         $GPG_KEY_PATH
 
 Authentication:
 EOF
@@ -522,12 +771,16 @@ EOF
     validate_prerequisites
     test_ssh_connection || exit 1
     prepare_remote_system
+    setup_remote_secrets || exit 1
     install_nixos || exit 1
     verify_installation
     cleanup
 
     log_success "Remote NixOS installation completed!"
     log_info "Your NixOS system is now ready with SSH access enabled"
+    log_info "Secrets have been saved to:"
+    log_info "  - /run/secrets/gh_pat"
+    log_info "  - /run/secrets/private_DC_ENCODE_key.asc"
 }
 
 # === Signal handlers ===
