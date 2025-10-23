@@ -24,7 +24,12 @@
 
           # main server config
           (
-            { config, pkgs, lib, ... }:
+            {
+              config,
+              pkgs,
+              lib,
+              ...
+            }:
             {
               nix.settings.experimental-features = [
                 "nix-command"
@@ -90,7 +95,17 @@
                 openssh.authorizedKeys.keys = [
                   "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB2+OS6UOfiyAeJNyAvFvPLbVhcjeSTHni08+9O0vTjy nixos-vm"
                 ];
+                shell = pkgs.zsh;
               };
+
+              # default shell for all newly created interactive users
+              users.defaultUserShell = pkgs.zsh;
+
+              # expose shells
+              environment.shells = with pkgs; [
+                zsh
+                bash
+              ];
 
               # SSH configuration - key-only authentication
               services.openssh = {
@@ -137,6 +152,11 @@
                 sops
                 age
                 pciutils # for lspci command
+                mc
+                # zsh & shell enhancements
+                zsh
+                # Python
+                python3
               ];
 
               # containers (Podman or Docker)
@@ -183,61 +203,83 @@
                 };
               };
 
+              # Zsh configuration (powerlevel10k theme + plugins)
+              programs.zsh = {
+                enable = true;
+                enableCompletion = true;
+              };
+
               # GitHub Actions Runners
-              services.github-runners = let
-                # Number of runners to create (easily configurable)
-                runnerCount = 3;
-                
-                # Generate runners dynamically
-                generateRunners = count: builtins.listToAttrs (
-                  map (i: let
-                    runnerName = "runner-${toString i}";
-                  in {
-                    name = runnerName;
-                    value = {
-                      enable = true;
-                      url = "https://github.com/haitranviet96/my-server";
-                      tokenFile = "/run/secrets/gh_pat";
-                      ephemeral = true;
-                      replace = true;
-                      name = "nixos-${runnerName}";
-                      
-                      extraLabels = [ 
-                        "nixos" 
-                        "docker" 
-                        "self-hosted" 
-                        "ephemeral" 
-                        "instance-${toString i}"
-                        "cuda"
-                      ];
-                      
-                      extraPackages = with pkgs; [
-                        docker docker-compose git curl wget jq
-                        nodejs_20 python3 gcc gnumake
-                      ];
-                      
-                      serviceOverrides = {
-                        SupplementaryGroups = [ "docker" ];
-                        Restart = pkgs.lib.mkForce "always";
-                        RestartSec = "10s";
-                        
-                        # Cleanup before each job
-                        ExecStartPre = [
-                          "${pkgs.docker}/bin/docker system prune -f --volumes"
-                        ];
-                        
-                        # Resource limits
-                        MemoryMax = "6G";
-                        CPUQuota = "300%";
-                        
-                        # Security
-                        NoNewPrivileges = true;
-                        PrivateTmp = true;
-                      };
-                    };
-                  }) (builtins.genList (i: i + 1) count)
-                );
-              in generateRunners runnerCount;
+              services.github-runners =
+                let
+                  # Number of runners to create (easily configurable)
+                  runnerCount = 3;
+
+                  # Generate runners dynamically
+                  generateRunners =
+                    count:
+                    builtins.listToAttrs (
+                      map (
+                        i:
+                        let
+                          runnerName = "runner-${toString i}";
+                        in
+                        {
+                          name = runnerName;
+                          value = {
+                            enable = true;
+                            url = "https://github.com/haitranviet96/my-server";
+                            tokenFile = "/run/secrets/gh_pat";
+                            ephemeral = true;
+                            replace = true;
+                            name = "nixos-${runnerName}";
+
+                            extraLabels = [
+                              "nixos"
+                              "docker"
+                              "self-hosted"
+                              "ephemeral"
+                              "instance-${toString i}"
+                              "cuda"
+                            ];
+
+                            extraPackages = with pkgs; [
+                              docker
+                              docker-compose
+                              git
+                              curl
+                              wget
+                              jq
+                              nodejs_20
+                              python3
+                              gcc
+                              gnumake
+                            ];
+
+                            serviceOverrides = {
+                              SupplementaryGroups = [ "docker" ];
+                              Restart = pkgs.lib.mkForce "always";
+                              RestartSec = "10s";
+
+                              # Cleanup before each job
+                              ExecStartPre = [
+                                "${pkgs.docker}/bin/docker system prune -f --volumes"
+                              ];
+
+                              # Resource limits
+                              MemoryMax = "6G";
+                              CPUQuota = "300%";
+
+                              # Security
+                              NoNewPrivileges = true;
+                              PrivateTmp = true;
+                            };
+                          };
+                        }
+                      ) (builtins.genList (i: i + 1) count)
+                    );
+                in
+                generateRunners runnerCount;
 
               # Ensure the github-runner user exists and is in docker group
               users.users.github-runner = {
@@ -245,7 +287,7 @@
                 group = "github-runner";
                 extraGroups = [ "docker" ];
               };
-              users.groups.github-runner = {};
+              users.groups.github-runner = { };
 
               # housekeeping
               nix.gc = {
