@@ -4,16 +4,14 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # pinned channel
-    flake-utils.url = "github:numtide/flake-utils";
     disko.url = "github:nix-community/disko";
   };
 
   outputs =
     {
-      self,
       nixpkgs,
-      flake-utils,
       disko,
+      ...
     }:
     {
       nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
@@ -43,9 +41,6 @@
               # System state version
               system.stateVersion = "25.05";
 
-              # Hardware configuration
-              hardware.enableAllHardware = true;
-
               # NVIDIA drivers
               services.xserver.videoDrivers = [ "nvidia" ];
               hardware.nvidia = {
@@ -55,11 +50,7 @@
                 # Enable the Nvidia settings menu accessible via `nvidia-settings`
                 nvidiaSettings = false; # Set to false for headless server
 
-                # Optionally, you may need to select the appropriate driver version for your GPU
-                # package = config.boot.kernelPackages.nvidiaPackages.stable;
-
                 # Enable NVIDIA Power Management (for newer GPUs)
-                powerManagement.enable = true;
                 powerManagement.finegrained = false;
 
                 # Use open source kernel module (recommended for RTX/GTX 16xx and newer)
@@ -76,11 +67,9 @@
 
               # Console-only system (no GUI)
               services.xserver.enable = false;
-              boot.plymouth.enable = false;
 
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
-              boot.loader.efi.canTouchEfiVariables = true;
 
               # users
               users.users.haitv = {
@@ -153,15 +142,11 @@
                 age
                 pciutils # for lspci command
                 mc
-                # zsh & shell enhancements
-                zsh
-                # Python
                 python3
               ];
 
               # containers (Podman or Docker)
               virtualisation.docker.enable = true;
-              virtualisation.oci-containers.backend = "docker";
 
               # Enable virtualization stack
               virtualisation.libvirtd = {
@@ -187,7 +172,6 @@
 
               # GPG configuration
               programs.gnupg.agent = {
-                enable = true;
                 pinentryPackage = pkgs.pinentry-curses; # For headless server
               };
 
@@ -203,7 +187,7 @@
                 };
               };
 
-              # Zsh configuration (powerlevel10k theme + plugins)
+              # Zsh configuration
               programs.zsh = {
                 enable = true;
                 enableCompletion = true;
@@ -244,14 +228,9 @@
                             ];
 
                             extraPackages = with pkgs; [
-                              docker
                               docker-compose
-                              git
-                              curl
-                              wget
                               jq
                               nodejs_20
-                              python3
                               gcc
                               gnumake
                             ];
@@ -296,7 +275,7 @@
                 options = "--delete-older-than 14d";
               };
 
-              # backups/snapshots if using btrfs
+              # backups/snapshots with btrfs
               services.snapper = {
                 configs = {
                   root = {
