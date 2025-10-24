@@ -149,6 +149,22 @@
               # containers (Podman or Docker)
               virtualisation.docker.enable = true;
 
+              # Docker networks setup
+              systemd.services.docker-networks = {
+                description = "Create Docker networks";
+                wantedBy = [ "docker.service" ];
+                after = [ "docker.service" ];
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                  ExecStart = ''
+                    ${pkgs.docker}/bin/docker network create --driver bridge --ipv6 multimedia || true
+                    ${pkgs.docker}/bin/docker network create --driver bridge --ipv6 webserver || true
+                    ${pkgs.docker}/bin/docker network create --driver bridge --ipv6 tools || true
+                  '';
+                };
+              };
+
               # Enable virtualization stack
               virtualisation.libvirtd = {
                 enable = true;

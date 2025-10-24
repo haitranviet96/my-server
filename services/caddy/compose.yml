@@ -22,7 +22,6 @@ services:
       - multimedia
       - tools
       - webserver
-      - nix_vm
     labels:
       - wud.watch=false
 
@@ -36,16 +35,6 @@ networks:
   webserver:
     name: webserver
     external: true
-  nix_vm:
-    name: nix_vm
-    driver: macvlan
-    driver_opts:
-      parent: virbr10
-    ipam:
-      config:
-        - subnet: 192.168.150.0/24
-          gateway: 192.168.150.1
-          ip_range: 192.168.150.240/28
 
 volumes:
   caddy_data:
