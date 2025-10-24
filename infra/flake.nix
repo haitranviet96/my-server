@@ -143,6 +143,7 @@
                 pciutils # for lspci command
                 mc
                 python3
+                bash
               ];
 
               # containers (Podman or Docker)
@@ -213,7 +214,7 @@
                           value = {
                             enable = true;
                             url = "https://github.com/haitranviet96/my-server";
-                            tokenFile = "/run/secrets/gh_pat";
+                            tokenFile = "/var/lib/github-runner/token";
                             ephemeral = true;
                             replace = true;
                             name = "nixos-${runnerName}";
@@ -228,11 +229,14 @@
                             ];
 
                             extraPackages = with pkgs; [
+                              docker
                               docker-compose
                               jq
                               nodejs_20
                               gcc
                               gnumake
+                              gnupg
+                              sops
                             ];
 
                             serviceOverrides = {
@@ -259,6 +263,11 @@
                     );
                 in
                 generateRunners runnerCount;
+
+              # Ensure github-runner token is persisted
+              systemd.tmpfiles.rules = [
+                "f /var/lib/github-runner/token 0600 github-runner github-runner - "
+              ];
 
               # Ensure the github-runner user exists and is in docker group
               users.users.github-runner = {

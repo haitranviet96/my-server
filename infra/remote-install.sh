@@ -61,7 +61,7 @@ OPTIONS:
   -k, --key       SSH private key path (default: auto-detect or from SSH config)
   -f, --flake     Flake configuration name (default: myserver)
   --nixos-user    NixOS username (default: haitv)
-  --github-pat    GitHub Personal Access Token (will be saved to /run/secrets/gh_pat)
+  --github-pat    GitHub Personal Access Token (will be saved to /var/lib/github-runner/token)
   --copy-home     Copy existing home folder from old btrfs @home subvolume
   --old-home-device  Device with old btrfs disk (e.g., /dev/sdb1)
   -h, --help      Show this help message
@@ -503,10 +503,6 @@ prepare_remote_system() {
             echo "Warning: Target disk $TARGET_DISK not found"
             lsblk
         fi
-
-        # Create secrets directory
-        mkdir -p /run/secrets
-        chmod 700 /run/secrets
 EOF
 
     # Mount old home device if specified
@@ -565,7 +561,7 @@ EOF
 
 # === Setup GitHub PAT on newly installed system ===
 setup_secrets_post_install() {
-    log_info "Setting up GitHub PAT on newly installed system..."
+    log_info "Setting up GitHub PAT and GPG key on newly installed system..."
     
     # Use the NEW NixOS credentials (after installation), not the live CD credentials
     local ssh_cmd
@@ -582,12 +578,12 @@ setup_secrets_post_install() {
     
     log_info "Connecting as: $NIXOS_USERNAME@$TARGET_HOST"
     
-    # Create secrets directory
-    $ssh_cmd "sudo mkdir -p /run/secrets && sudo chmod 700 /run/secrets" || true
+    # Create github-runner directory
+    $ssh_cmd "sudo mkdir -p /var/lib/github-runner && sudo chmod 700 /var/lib/github-runner" || true
     
     # Create GitHub PAT file on the new system
     log_info "Creating GitHub PAT on newly installed system..."
-    if $ssh_cmd "echo '$GITHUB_PAT' | sudo tee /run/secrets/gh_pat > /dev/null"; then
+    if $ssh_cmd "echo '$GITHUB_PAT' | sudo tee /var/lib/github-runner/token > /dev/null"; then
         log_success "GitHub PAT created on new system successfully"
     else
         log_error "Failed to create GitHub PAT on new system"
@@ -595,9 +591,31 @@ setup_secrets_post_install() {
     fi
 
     # Set proper permissions on remote secrets
-    $ssh_cmd "sudo chmod 600 /run/secrets/gh_pat" || true
+    $ssh_cmd "sudo chmod 600 /var/lib/github-runner/token" || true
 
-    log_success "GitHub PAT configured on newly installed system"
+    log_success "GitHub PAT configured on newly installed system at /var/lib/github-runner/token"
+    
+    # Export GPG key for SOPS decryption on GitHub runners
+    log_info "Exporting GPG key for GitHub runners (SOPS)..."
+    
+    GPG_KEY_NAME="DC_ENCODE"
+    
+    $ssh_cmd bash -s "$GPG_KEY_NAME" << 'EOF'
+        GPG_KEY_NAME="$1"
+        OUTPUT_FILE="/var/lib/github-runner/gpg-key.b64"
+        
+        # Export the GPG key by name
+        if gpg --export-secret-key --armor "$GPG_KEY_NAME" | base64 -w0 > "$OUTPUT_FILE" 2>/dev/null; then
+            sudo chmod 600 "$OUTPUT_FILE"
+            sudo chown github-runner:github-runner "$OUTPUT_FILE" 2>/dev/null || true
+            echo "✓ GPG key (DC_ENCODE) exported successfully"
+        else
+            echo "Warning: Could not export GPG key from host"
+            exit 0  # Continue anyway, as key might not exist on this system
+        fi
+EOF
+    
+    log_success "GPG key (DC_ENCODE) setup completed"
 }
 copy_home_folder() {
     if [[ "$COPY_HOME" != "true" ]]; then
@@ -869,7 +887,11 @@ EOF
 
     log_success "Remote NixOS installation completed!"
     log_info "Your NixOS system is now ready with SSH access enabled"
-    log_info "GitHub PAT has been saved to: /run/secrets/gh_pat"
+    log_info "GitHub PAT has been saved to: /var/lib/github-runner/token"
+    log_info "GPG key has been saved to: /var/lib/github-runner/gpg-key.b64"
+    log_info ""
+    log_info "GitHub runners will automatically use the GPG key from /var/lib/github-runner/gpg-key.b64"
+    log_info "No GitHub Secrets needed!"
 }
 
 # === Signal handlers ===
