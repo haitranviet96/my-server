@@ -40,7 +40,9 @@ USE_SSH_CONFIG=false
 FLAKE_CONFIG="myserver"
 NIXOS_USERNAME="haitv"
 GITHUB_PAT=""
-GPG_KEY_PATH=""
+COPY_HOME=false
+OLD_HOME_DEVICE=""
+OLD_HOME_BTRFS_MOUNT="/mnt/old_btrfs"  # Internal mount point for old btrfs disk
 
 # === Usage function ===
 usage() {
@@ -60,7 +62,8 @@ OPTIONS:
   -f, --flake     Flake configuration name (default: myserver)
   --nixos-user    NixOS username (default: haitv)
   --github-pat    GitHub Personal Access Token (will be saved to /run/secrets/gh_pat)
-  --gpg-key       Path to DC_ENCODE GPG private key (will be saved to /run/secrets/private_DC_ENCODE_key.asc)
+  --copy-home     Copy existing home folder from old btrfs @home subvolume
+  --old-home-device  Device with old btrfs disk (e.g., /dev/sdb1)
   -h, --help      Show this help message
 
 EXAMPLES:
@@ -68,7 +71,8 @@ EXAMPLES:
   $0 192.168.1.100              # Auto-detect key or prompt for setup
   $0 -k ~/.ssh/custom_key 192.168.1.100
   $0 -u installer -d /dev/sda myserver
-  $0 --github-pat "ghp_xxx" --gpg-key /path/to/key.asc myserver
+  $0 --github-pat "ghp_xxx" myserver
+  $0 --copy-home --old-home-device /dev/sdb1 myserver
   $0 --nixos-user myuser myserver-host
 
 AUTHENTICATION PRIORITY:
@@ -114,8 +118,12 @@ parse_args() {
                 GITHUB_PAT="$2"
                 shift 2
                 ;;
-            --gpg-key)
-                GPG_KEY_PATH="$2"
+            --copy-home)
+                COPY_HOME=true
+                shift
+                ;;
+            --old-home-device)
+                OLD_HOME_DEVICE="$2"
                 shift 2
                 ;;
             -h|--help)
@@ -198,68 +206,6 @@ check_github_pat() {
     return 1
 }
 
-# === Check GPG key file on remote system ===
-check_remote_gpg_key() {
-    local ssh_cmd="$1"
-    
-    log_info "Checking for GPG key on remote system..."
-    
-    local remote_locations=(
-        "/root/gh_pat"                          # Remote root
-        "/home/root/gh_pat"                     # Remote root home
-        "~/private_DC_ENCODE_key.asc"           # Remote home
-        "/root/private_DC_ENCODE_key.asc"       # Remote root
-    )
-    
-    for location in "${remote_locations[@]}"; do
-        if $ssh_cmd "[[ -f '$location' ]]" 2>/dev/null; then
-            echo "$location"
-            return 0
-        fi
-    done
-    
-    return 1
-}
-
-# === Check GPG key file ===
-check_gpg_key() {
-    log_info "Checking for DC_ENCODE GPG key file..."
-    
-    # If already provided via command line, use it
-    if [[ -n "$GPG_KEY_PATH" ]]; then
-        if [[ -f "$GPG_KEY_PATH" ]]; then
-            log_success "GPG key provided via command line: $GPG_KEY_PATH"
-            return 0
-        else
-            log_error "GPG key file not found: $GPG_KEY_PATH"
-            return 1
-        fi
-    fi
-    
-    # Search for private_DC_ENCODE_key.asc file in common locations
-    local gpg_file
-    gpg_file=$(search_file_in_locations "private_DC_ENCODE_key.asc")
-    
-    if [[ -n "$gpg_file" ]]; then
-        log_success "Found GPG key file at: $gpg_file"
-        GPG_KEY_PATH="$gpg_file"
-        if [[ ! -s "$GPG_KEY_PATH" ]]; then
-            log_error "GPG key file is empty: $GPG_KEY_PATH"
-            return 1
-        fi
-        return 0
-    fi
-    
-    # Not found in any location
-    log_error "GPG key file not found in:"
-    log_error "  - Current folder: ./private_DC_ENCODE_key.asc"
-    log_error "  - Home folder: $HOME/private_DC_ENCODE_key.asc"
-    log_error ""
-    log_error "Please export your GPG key or place it in one of the above locations."
-    log_error "To export: gpg --export-secret-keys --armor DC_ENCODE > private_DC_ENCODE_key.asc"
-    return 1
-}
-
 # === Prompt for required configuration ===
 prompt_for_configuration() {
     log_info "Collecting configuration information..."
@@ -287,6 +233,20 @@ prompt_for_configuration() {
     read -p "NixOS username (default: $NIXOS_USERNAME): " input_nixos_user
     if [[ -n "$input_nixos_user" ]]; then
         NIXOS_USERNAME="$input_nixos_user"
+    fi
+
+    # Prompt for home folder copy
+    if [[ "$COPY_HOME" != "true" ]]; then
+        read -p "Copy home folder from old btrfs @home subvolume? [y/N]: " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            COPY_HOME=true
+            read -p "Old btrfs disk device (e.g., /dev/sdb1): " OLD_HOME_DEVICE
+            if [[ -z "$OLD_HOME_DEVICE" ]]; then
+                log_error "Device path is required for home folder copy"
+                COPY_HOME=false
+            fi
+        fi
     fi
 
     echo
@@ -441,11 +401,6 @@ validate_prerequisites() {
         exit 1
     fi
 
-    # Check for GPG key file
-    if ! check_gpg_key; then
-        exit 1
-    fi
-
     # Detect SSH configuration
     if ! detect_ssh_config "$TARGET_HOST"; then
         log_info "No SSH config entry found for '$TARGET_HOST'"
@@ -554,67 +509,167 @@ prepare_remote_system() {
         chmod 700 /run/secrets
 EOF
 
+    # Mount old home device if specified
+    if [[ -n "$OLD_HOME_DEVICE" && "$COPY_HOME" == "true" ]]; then
+        log_info "Mounting old btrfs disk: $OLD_HOME_DEVICE"
+        
+        $ssh_cmd bash -s "$OLD_HOME_DEVICE" "$OLD_HOME_BTRFS_MOUNT" << 'EOF'
+            OLD_HOME_DEVICE="$1"
+            OLD_HOME_BTRFS_MOUNT="$2"
+            
+            # Create mount point if it doesn't exist
+            mkdir -p "$OLD_HOME_BTRFS_MOUNT"
+            
+            # Check if device exists
+            if [[ ! -b "$OLD_HOME_DEVICE" ]]; then
+                echo "Error: Device $OLD_HOME_DEVICE not found"
+                lsblk
+                exit 1
+            fi
+            
+            # Check if already mounted
+            if mountpoint -q "$OLD_HOME_BTRFS_MOUNT" 2>/dev/null; then
+                echo "Device already mounted at $OLD_HOME_BTRFS_MOUNT"
+            else
+                # Mount the btrfs device with @home subvolume
+                if mount -t btrfs "$OLD_HOME_DEVICE" "$OLD_HOME_BTRFS_MOUNT"; then
+                    echo "Successfully mounted btrfs device $OLD_HOME_DEVICE to $OLD_HOME_BTRFS_MOUNT"
+                else
+                    echo "Failed to mount $OLD_HOME_DEVICE"
+                    exit 1
+                fi
+            fi
+            
+            # Verify mount was successful
+            if mountpoint -q "$OLD_HOME_BTRFS_MOUNT" 2>/dev/null; then
+                echo "Mount verified successfully"
+                # List available subvolumes
+                echo "Available subvolumes:"
+                btrfs subvolume list "$OLD_HOME_BTRFS_MOUNT" 2>/dev/null || true
+            else
+                echo "Error: Mount verification failed"
+                exit 1
+            fi
+EOF
+        
+        if [[ $? -ne 0 ]]; then
+            log_error "Failed to mount old btrfs disk"
+            return 1
+        fi
+        
+        log_success "Old btrfs disk mounted successfully"
+    fi
+
     log_success "Remote system prepared"
 }
 
-# === Setup secrets on remote system ===
-setup_remote_secrets() {
-    log_info "Setting up secrets on remote system..."
+# === Setup GitHub PAT on newly installed system ===
+setup_secrets_post_install() {
+    log_info "Setting up GitHub PAT on newly installed system..."
     
-    local scp_cmd
-    if [[ "$USE_SSH_CONFIG" == "true" ]]; then
-        scp_cmd="scp"
-        local remote_target="$SSH_CONFIG_HOST"
-    else
-        local ssh_opts="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-        if [[ -n "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH" ]]; then
-            ssh_opts="$ssh_opts -i $SSH_KEY_PATH"
-        fi
-        scp_cmd="scp $ssh_opts"
-        local remote_target="$TARGET_USER@$TARGET_HOST"
-    fi
-
-    # Copy GitHub PAT to remote
-    log_info "Copying GitHub PAT to remote system..."
-    if $scp_cmd "$GITHUB_PAT" "${remote_target}:/run/secrets/gh_pat"; then
-        log_success "GitHub PAT uploaded successfully"
-    else
-        log_error "Failed to upload GitHub PAT"
-        return 1
-    fi
-
-    # Copy GPG key to remote
-    log_info "Copying DC_ENCODE GPG key to remote system..."
-    if $scp_cmd "$GPG_KEY_PATH" "${remote_target}:/run/secrets/private_DC_ENCODE_key.asc"; then
-        log_success "GPG key uploaded successfully"
-    else
-        log_error "Failed to upload GPG key"
-        return 1
-    fi
-
-    # Set proper permissions on remote secrets
+    # Use the NEW NixOS credentials (after installation), not the live CD credentials
     local ssh_cmd
     if [[ "$USE_SSH_CONFIG" == "true" ]]; then
         ssh_cmd="ssh $SSH_CONFIG_HOST"
     else
-        local ssh_opts="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        local ssh_opts="-o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
         if [[ -n "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH" ]]; then
             ssh_opts="$ssh_opts -i $SSH_KEY_PATH"
         fi
-        ssh_cmd="ssh $ssh_opts $TARGET_USER@$TARGET_HOST"
+        # Use NIXOS_USERNAME for the newly installed system
+        ssh_cmd="ssh $ssh_opts $NIXOS_USERNAME@$TARGET_HOST"
+    fi
+    
+    log_info "Connecting as: $NIXOS_USERNAME@$TARGET_HOST"
+    
+    # Create secrets directory
+    $ssh_cmd "sudo mkdir -p /run/secrets && sudo chmod 700 /run/secrets" || true
+    
+    # Create GitHub PAT file on the new system
+    log_info "Creating GitHub PAT on newly installed system..."
+    if $ssh_cmd "echo '$GITHUB_PAT' | sudo tee /run/secrets/gh_pat > /dev/null"; then
+        log_success "GitHub PAT created on new system successfully"
+    else
+        log_error "Failed to create GitHub PAT on new system"
+        return 1
     fi
 
-    $ssh_cmd << 'EOF'
-        chmod 600 /run/secrets/gh_pat
-        chmod 600 /run/secrets/private_DC_ENCODE_key.asc
+    # Set proper permissions on remote secrets
+    $ssh_cmd "sudo chmod 600 /run/secrets/gh_pat" || true
+
+    log_success "GitHub PAT configured on newly installed system"
+}
+copy_home_folder() {
+    if [[ "$COPY_HOME" != "true" ]]; then
+        log_info "Skipping home folder copy (not requested)"
+        return 0
+    fi
+    
+    log_info "Copying home folder from old btrfs @home subvolume..."
+    
+    # Use the NEW NixOS credentials (after installation), not the live CD credentials
+    local ssh_cmd
+    if [[ "$USE_SSH_CONFIG" == "true" ]]; then
+        ssh_cmd="ssh $SSH_CONFIG_HOST"
+    else
+        local ssh_opts="-o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        if [[ -n "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH" ]]; then
+            ssh_opts="$ssh_opts -i $SSH_KEY_PATH"
+        fi
+        # Use NIXOS_USERNAME instead of TARGET_USER (which is root on live ISO)
+        ssh_cmd="ssh $ssh_opts $NIXOS_USERNAME@$TARGET_HOST"
+    fi
+    
+    log_info "Connecting as: $NIXOS_USERNAME@$TARGET_HOST"
+    
+    # Execute remote commands to copy home
+    $ssh_cmd << EOF
+        set -euo pipefail
         
-        # Import GPG key for sops
-        if command -v gpg &> /dev/null; then
-            gpg --import /run/secrets/private_DC_ENCODE_key.asc 2>/dev/null || true
+        OLD_HOME_BTRFS_MOUNT="/mnt/old_btrfs"
+        OLD_HOME_SUBVOL="\$OLD_HOME_BTRFS_MOUNT/@home"
+        
+        # Check if old btrfs mount point exists
+        if [[ ! -d "\$OLD_HOME_BTRFS_MOUNT" ]]; then
+            echo "Error: Mount point \$OLD_HOME_BTRFS_MOUNT does not exist"
+            exit 1
+        fi
+        
+        # Check if @home subvolume is mounted
+        if [[ ! -d "\$OLD_HOME_SUBVOL" ]]; then
+            echo "Error: @home subvolume not found at \$OLD_HOME_SUBVOL"
+            ls -la "\$OLD_HOME_BTRFS_MOUNT"
+            exit 1
+        fi
+        
+        echo "Copying contents from \$OLD_HOME_SUBVOL to /home..."
+        
+        # Copy files while preserving ownership and permissions
+        # First ensure /home exists and has correct permissions
+        mkdir -p /home
+        chmod 755 /home
+        
+        # Copy with rsync if available, otherwise use cp
+        if command -v rsync &>/dev/null; then
+            rsync -av --chown=root:root "\$OLD_HOME_SUBVOL/" /home/
+        else
+            cp -rp "\$OLD_HOME_SUBVOL/"* /home/ 2>/dev/null || true
+        fi
+        
+        if [[ \$? -eq 0 ]]; then
+            echo "Successfully copied home folder contents"
+        else
+            echo "Warning: Some files may not have been copied"
         fi
 EOF
-
-    log_success "Secrets configured on remote system"
+    
+    if [[ $? -eq 0 ]]; then
+        log_success "Home folder copied successfully"
+        return 0
+    else
+        log_error "Failed to copy home folder"
+        return 1
+    fi
 }
 
 # === Main installation function ===
@@ -644,8 +699,10 @@ install_nixos() {
     fi
 
     # Add other options
-    nixos_anywhere_cmd="$nixos_anywhere_cmd --disk-encryption-keys /tmp/secret.key /dev/null"
-    nixos_anywhere_cmd="$nixos_anywhere_cmd --extra-files /dev/null"
+    # Update disko.nix with the target disk
+    log_info "Updating disko.nix with target disk: $TARGET_DISK"
+    sed -i.bak "s|device = \"/dev/vda\"|device = \"$TARGET_DISK\"|g" disko.nix
+
     nixos_anywhere_cmd="$nixos_anywhere_cmd --flake .#$FLAKE_CONFIG"
 
     log_info "Executing: $nixos_anywhere_cmd"
@@ -717,9 +774,41 @@ verify_installation() {
 # === Cleanup function ===
 cleanup() {
     log_info "Cleaning up temporary files..."
-    # Remove temporary GPG key export if it exists
-    if [[ -f "/tmp/private_DC_ENCODE_key_export.asc" ]]; then
-        rm -f "/tmp/private_DC_ENCODE_key_export.asc"
+    # Restore disko.nix backup if it was modified
+    if [[ -f "disko.nix.bak" ]]; then
+        mv disko.nix.bak disko.nix
+    fi
+    
+    # Unmount old home device if it was mounted
+    if [[ -n "$OLD_HOME_DEVICE" && "$COPY_HOME" == "true" ]]; then
+        log_info "Unmounting old btrfs disk"
+        
+        # Construct SSH command based on authentication method
+        local ssh_cmd
+        if [[ "$USE_SSH_CONFIG" == "true" ]]; then
+            ssh_cmd="ssh $SSH_CONFIG_HOST"
+        else
+            local ssh_opts="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+            if [[ -n "$SSH_KEY_PATH" && -f "$SSH_KEY_PATH" ]]; then
+                ssh_opts="$ssh_opts -i $SSH_KEY_PATH"
+            fi
+            ssh_cmd="ssh $ssh_opts $NIXOS_USERNAME@$TARGET_HOST"
+        fi
+        
+        $ssh_cmd bash -s << 'EOF'
+            OLD_HOME_BTRFS_MOUNT="/mnt/old_btrfs"
+            
+            # Check if mount point is actually mounted
+            if mountpoint -q "$OLD_HOME_BTRFS_MOUNT" 2>/dev/null; then
+                if umount "$OLD_HOME_BTRFS_MOUNT"; then
+                    echo "Successfully unmounted $OLD_HOME_BTRFS_MOUNT"
+                else
+                    echo "Warning: Failed to unmount $OLD_HOME_BTRFS_MOUNT (may be in use)"
+                fi
+            else
+                echo "Mount point $OLD_HOME_BTRFS_MOUNT is not mounted"
+            fi
+EOF
     fi
 }
 
@@ -743,7 +832,8 @@ Configuration:
   Flake Config:    $FLAKE_CONFIG
   NixOS User:      $NIXOS_USERNAME
   GitHub PAT:      <hidden>
-  GPG Key:         $GPG_KEY_PATH
+  Copy Home:       $COPY_HOME
+  Old Home Device: ${OLD_HOME_DEVICE:-N/A}
 
 Authentication:
 EOF
@@ -771,16 +861,15 @@ EOF
     validate_prerequisites
     test_ssh_connection || exit 1
     prepare_remote_system
-    setup_remote_secrets || exit 1
     install_nixos || exit 1
     verify_installation
+    setup_secrets_post_install || exit 1
+    copy_home_folder || exit 1
     cleanup
 
     log_success "Remote NixOS installation completed!"
     log_info "Your NixOS system is now ready with SSH access enabled"
-    log_info "Secrets have been saved to:"
-    log_info "  - /run/secrets/gh_pat"
-    log_info "  - /run/secrets/private_DC_ENCODE_key.asc"
+    log_info "GitHub PAT has been saved to: /run/secrets/gh_pat"
 }
 
 # === Signal handlers ===
