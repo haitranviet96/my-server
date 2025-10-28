@@ -7,7 +7,7 @@ services:
     env_file:
       - ../docker.env
     volumes:
-      - ${HOME}/.config/prowlarr:/config
+      - /home/haitv/.config/prowlarr:/config
     restart: unless-stopped
     networks:
       - multimedia

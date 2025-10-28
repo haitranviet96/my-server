@@ -15,7 +15,7 @@ services:
       security__staffDeviceVerification: false
       url: https://blog.haivita.top
     volumes:
-      - ${HOME}/.config/ghost/content:/var/lib/ghost/content
+      - /home/haitv/.config/ghost/content:/var/lib/ghost/content
     networks:
       - webserver
 
@@ -27,7 +27,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ${HOME}/.config/ghost/db:/var/lib/mysql
+      - /home/haitv/.config/ghost/db:/var/lib/mysql
     networks:
       - webserver
     labels:

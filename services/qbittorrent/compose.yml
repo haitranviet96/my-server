@@ -10,7 +10,7 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - ${HOME}/.config/qbittorrent:/config
+      - /home/haitv/.config/qbittorrent:/config
       - /media/Data/@media:/downloads
     ports:
       - 6881:6881

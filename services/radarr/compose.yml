@@ -7,7 +7,7 @@ services:
     env_file:
       - ../docker.env
     volumes:
-      - ${HOME}/.config/radarr:/config
+      - /home/haitv/.config/radarr:/config
       - /media/Data/@media:/data
     restart: unless-stopped
     networks:

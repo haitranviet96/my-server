@@ -7,7 +7,7 @@ services:
     env_file:
       - ../docker.env
     volumes:
-      - ${HOME}/.config/bazarr:/config
+      - /home/haitv/.config/bazarr:/config
       - /media/Data/@media:/data
     restart: unless-stopped
     networks:

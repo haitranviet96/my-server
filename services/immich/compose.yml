@@ -48,7 +48,7 @@ services:
       service: cuda # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     user: 1000:100
     volumes:
-      - ${HOME}/.cache/immich:/cache
+      - /home/haitv/.cache/immich:/cache
     env_file:
       - path: .local.env
         required: false

@@ -6,7 +6,7 @@ services:
     container_name: uptime-kuma
     user: 1000:100
     volumes:
-      - ${HOME}/.config/uptime-kuma:/app/data
+      - /home/haitv/.config/uptime-kuma:/app/data
     ports:
       - 3001
     restart: unless-stopped

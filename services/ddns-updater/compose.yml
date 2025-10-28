@@ -7,7 +7,7 @@ services:
     ports:
       - 8000
     volumes:
-      - ${HOME}/.config/ddns-updater:/updater/data
+      - /home/haitv/.config/ddns-updater:/updater/data
     user: 1000:100
     environment:
       - CONFIG=

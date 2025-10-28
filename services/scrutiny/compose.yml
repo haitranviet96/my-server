@@ -14,8 +14,8 @@ services:
       - ../docker.env
     volumes:
       - /run/udev:/run/udev:ro
-      - ${HOME}/.config/scrutiny:/opt/scrutiny/config
-      - ${HOME}/.config/scrutiny/influxdb:/opt/scrutiny/influxdb
+      - /home/haitv/.config/scrutiny:/opt/scrutiny/config
+      - /home/haitv/.config/scrutiny/influxdb:/opt/scrutiny/influxdb
     devices:
       - "/dev/sda"
       - "/dev/sdb"

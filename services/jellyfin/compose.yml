@@ -8,9 +8,9 @@ services:
     group_add:
       - "105"
     volumes:
-      - ${HOME}/.config/jellyfin:/config
+      - /home/haitv/.config/jellyfin:/config
       - /media/Data/@media/media:/media
-      - ${HOME}/.cache/jellyfin:/cache
+      - /home/haitv/.cache/jellyfin:/cache
     deploy:
       resources:
         reservations:
