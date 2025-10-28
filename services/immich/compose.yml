@@ -25,8 +25,8 @@ services:
       - config.env
       - path: .local.env
         required: false
-      # ports:
-      # - 2283:3001
+    # ports:
+    # - 2283:3001
     user: 1000:100
     depends_on:
       - redis
@@ -48,7 +48,7 @@ services:
       service: cuda # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     user: 1000:100
     volumes:
-      - model-cache:/cache
+      - ${HOME}/.cache/immich:/cache
     env_file:
       - path: .local.env
         required: false
@@ -91,10 +91,6 @@ services:
       - tools
     labels:
       - wud.watch=false
-
-volumes:
-  model-cache:
-
 
 networks:
   tools:
