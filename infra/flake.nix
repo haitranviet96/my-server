@@ -71,6 +71,56 @@
               # UEFI Bootloader
               boot.loader.systemd-boot.enable = true;
 
+              # Assemble Intel IMSM (fake RAID) via mdadm at boot. NixOS exposes this via boot.swraid.
+              boot.swraid.enable = true;
+
+              # Filesystems
+              fileSystems."/media/BackupDisk" = {
+                device = "UUID=db7abc45-ab91-4f5f-8fc8-05e283b3952e";
+                fsType = "btrfs";
+                options = [
+                  "noauto"
+                  "nofail"
+                  "x-systemd.automount"
+                  "compress=zstd"
+                ];
+              };
+
+              fileSystems."/media/Data" = {
+                device = "UUID=980b2253-3c7c-4d1a-8cda-98cc74d31670";
+                fsType = "btrfs";
+                options = [
+                  "noauto"
+                  "nofail"
+                  "x-systemd.automount"
+                  "compress=zstd"
+                ];
+              };
+
+              fileSystems."/media/OLDROOT" = {
+                device = "UUID=0cd879fd-1962-4ebb-a5ee-687c8462cb7b";
+                fsType = "btrfs";
+                options = [
+                  "noauto"
+                  "nofail"
+                  "x-systemd.automount"
+                  "compress=zstd"
+                  "subvol=@"
+                ];
+              };
+
+              fileSystems."/media/OLDHOME" = {
+                device = "UUID=0cd879fd-1962-4ebb-a5ee-687c8462cb7b";
+                fsType = "btrfs";
+                options = [
+                  "noauto"
+                  "nofail"
+                  "x-systemd.automount"
+                  "compress=zstd"
+                  "subvol=@home"
+                ];
+              };
+
               # users
               users.users.haitv = {
                 isNormalUser = true;
