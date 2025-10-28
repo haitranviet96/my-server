@@ -6,7 +6,7 @@ services:
     container_name: jellyseerr
     environment:
       - TZ=Asia/Ho_Chi_Minh
-    user: 1000:1000
+    user: 1000:100
     volumes:
       - ${HOME}/.config/jellyseerr:/app/config
     restart: unless-stopped

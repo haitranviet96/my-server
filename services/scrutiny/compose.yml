@@ -10,10 +10,12 @@ services:
     ports:
       - 8080 # webapp
       - 8086 # influxDB admin
+    env_file:
+      - ../docker.env
     volumes:
       - /run/udev:/run/udev:ro
-      - /config/scrutiny:/opt/scrutiny/config
-      - /config/scrutiny/influxdb:/opt/scrutiny/influxdb
+      - ${HOME}/.config/scrutiny:/opt/scrutiny/config
+      - ${HOME}/.config/scrutiny/influxdb:/opt/scrutiny/influxdb
     devices:
       - "/dev/sda"
       - "/dev/sdb"

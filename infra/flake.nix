@@ -170,8 +170,8 @@
                   22
                   80
                   443
-                  20443 # speedtest-tracker HTTPS
-                  23001 # uptime-kuma HTTPS
+                  61208 # glances HTTP
+                  19999 # netdata default port
                 ];
                 # Allow Tailscale traffic
                 trustedInterfaces = [ "tailscale0" ];

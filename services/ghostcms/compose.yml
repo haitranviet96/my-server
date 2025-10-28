@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     ports:
       - 2368
-    user: 1000:1000
+    user: 1000:100
     environment:
       database__client: mysql
       database__connection__host: ghost-db
@@ -23,7 +23,7 @@ services:
     image: mysql:8.0
     container_name: ghost-db
     restart: unless-stopped
-    user: 1000:1000
+    user: 1000:100
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
