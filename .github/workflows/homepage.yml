@@ -30,11 +30,11 @@ jobs:
         uses: ./.github/actions/sops-decode
         with:
           filePath: ${{ env.SERVICE_PATH }}/config.env
-          gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Copy configs to host directory
         run: |
-          TARGET_DIR=/home/haitv/homepage/configs
+          TARGET_DIR=/srv/homepage/configs
+          mkdir -p "$TARGET_DIR"
           rsync -av --delete "${{ env.SERVICE_PATH }}/configs/" "$TARGET_DIR/"
         shell: bash
 
