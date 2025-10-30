@@ -325,6 +325,7 @@
                               # Security
                               NoNewPrivileges = true;
                               PrivateTmp = true;
+                              ProtectHome = false;
                             };
                           };
                         }
