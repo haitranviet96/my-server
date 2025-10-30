@@ -31,12 +31,15 @@ jobs:
         with:
           filePath: ${{ env.SERVICE_PATH }}/config.env
 
-      - name: Copy configs to host directory
-        run: |
-          TARGET_DIR=/home/haitv/homepage/configs
-          mkdir -p "$TARGET_DIR"
-          rsync -av --delete "${{ env.SERVICE_PATH }}/configs/" "$TARGET_DIR/"
-        shell: bash
+      - name: Deploy configs via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: haivita.top
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "${{ env.SERVICE_PATH }}/configs/"
+          target: "/home/haitv/homepage/configs"
+          rm: true
 
       - name: Deploy
         uses: ./.github/actions/deploy
