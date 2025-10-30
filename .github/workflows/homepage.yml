@@ -32,6 +32,13 @@ jobs:
           filePath: ${{ env.SERVICE_PATH }}/config.env
           gpgKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
+      - name: Copy configs to host directory
+        run: |
+          TARGET_DIR=/home/haitv/homepage/configs
+          mkdir -p "$TARGET_DIR"
+          rsync -av --delete "${{ env.SERVICE_PATH }}/configs/" "$TARGET_DIR/"
+        shell: bash
+
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
