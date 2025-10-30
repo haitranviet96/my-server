@@ -37,8 +37,8 @@ jobs:
           host: haivita.top
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "${{ env.SERVICE_PATH }}/configs/"
-          target: "/home/haitv/homepage/"
+          source: "${{ env.SERVICE_PATH }}/configs/*"
+          target: "/home/haitv/homepage/configs"
           rm: true
 
       - name: Deploy
