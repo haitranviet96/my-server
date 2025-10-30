@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "${{ env.SERVICE_PATH }}/configs/"
-          target: "/home/haitv/homepage/configs"
+          target: "/home/haitv/homepage/"
           rm: true
 
       - name: Deploy

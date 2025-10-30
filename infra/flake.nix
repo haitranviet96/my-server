@@ -130,7 +130,6 @@
                   "networkmanager"
                   "libvirtd"
                   "docker"
-                  "github-runner"
                 ];
                 openssh.authorizedKeys.keys = [
                   "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB2+OS6UOfiyAeJNyAvFvPLbVhcjeSTHni08+9O0vTjy nixos-vm"
@@ -297,6 +296,7 @@
                             ];
 
                             extraPackages = with pkgs; [
+                              curl
                               docker
                               docker-compose
                               jq
@@ -325,7 +325,6 @@
                               # Security
                               NoNewPrivileges = true;
                               PrivateTmp = true;
-                              ProtectHome = false;
                             };
                           };
                         }
@@ -337,21 +336,14 @@
               # Ensure github-runner token is persisted
               systemd.tmpfiles.rules = [
                 "f /var/lib/github-runner/token 0600 github-runner github-runner - "
-                "d /srv/homepage 0770 github-runner github-runner -"
               ];
-
-              # Ensure setgid on /srv/homepage so newly created files inherit group
-              system.activationScripts.setgidHomepage = ''
-                if [ -d /srv/homepage ]; then
-                  chmod g+s /srv/homepage
-                fi
-              '';
 
               # Ensure the github-runner user exists and is in docker group
               users.users.github-runner = {
                 isSystemUser = true;
                 group = "github-runner";
-                extraGroups = [ "docker" ];
+                # Add haitv group for write access to /home/haitv/homepage subdirectories (group-owned)
+                extraGroups = [ "docker" "haitv" ];
               };
               users.groups.github-runner = { };
 
