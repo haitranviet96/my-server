@@ -33,10 +33,11 @@ jobs:
 
       - name: Deploy configs via SSH
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" "${{ env.SERVICE_PATH }}/configs/" "${{ secrets.SSH_USERNAME }}@haivita.top:/home/haitv/homepage/configs/"
+          SSH_DIR=$(mktemp -d)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > "$SSH_DIR/id_rsa"
+          chmod 600 "$SSH_DIR/id_rsa"
+          rsync -avz --delete -e "ssh -i $SSH_DIR/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" "${{ env.SERVICE_PATH }}/configs/" "${{ secrets.SSH_USERNAME }}@haivita.top:/home/haitv/homepage/configs/"
+          rm -rf "$SSH_DIR"
 
       - name: Deploy
         uses: ./.github/actions/deploy

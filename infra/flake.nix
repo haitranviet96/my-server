@@ -306,6 +306,7 @@
                               gnupg
                               sops
                               rsync
+                              openssh
                             ];
 
                             serviceOverrides = {
