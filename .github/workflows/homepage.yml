@@ -36,8 +36,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H haivita.top >> ~/.ssh/known_hosts
-          rsync -avz --delete "${{ env.SERVICE_PATH }}/configs/" "${{ secrets.SSH_USERNAME }}@haivita.top:/home/haitv/homepage/configs/"
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" "${{ env.SERVICE_PATH }}/configs/" "${{ secrets.SSH_USERNAME }}@haivita.top:/home/haitv/homepage/configs/"
 
       - name: Deploy
         uses: ./.github/actions/deploy
