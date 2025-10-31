@@ -196,6 +196,7 @@
                 python3
                 bash
                 btrbk
+                tmux
               ];
 
               # containers (Podman or Docker)
@@ -344,8 +345,7 @@
               users.users.github-runner = {
                 isSystemUser = true;
                 group = "github-runner";
-                # Add haitv group for write access to /home/haitv/homepage subdirectories (group-owned)
-                extraGroups = [ "docker" "haitv" ];
+                extraGroups = [ "docker" ];
               };
               users.groups.github-runner = { };
 
@@ -356,23 +356,37 @@
                 options = "--delete-older-than 14d";
               };
 
-              # btrbk incremental backups - config file
+              # btrbk incremental backups
               environment.etc."btrbk/btrbk.conf".text = ''
                 snapshot_preserve_min latest
                 snapshot_preserve 7d
                 stream_compress zstd
 
+                # Root filesystem: local snapshots only
+                volume /
+                  snapshot_dir .snapshots
+                  snapshot_create always
+                  subvolume /
+                    snapshot_name root
+
+                # Home filesystem: local snapshots + external backup
+                volume /home
+                  snapshot_dir .snapshots
+                  snapshot_create always
+                  target /media/BackupDisk/btrbk/home
+                    target_preserve 7d 3w 1m
+                  subvolume /home
+                    snapshot_name home
+
+                # Data volume: local snapshots + external backup
                 volume /media/Data
                   snapshot_dir .snapshots
                   snapshot_create always
-
-                  target /media/BackupDisk/btrbk
+                  target /media/BackupDisk/btrbk/data
                     target_preserve 7d 3w 3m
-
-                  subvolume @archived
+                  subvolume /media/Data/@archived
                     snapshot_name archived
-
-                  subvolume @mydata
+                  subvolume /media/Data/@mydata
                     snapshot_name mydata
               '';
 
@@ -383,6 +397,9 @@
                   Type = "oneshot";
                   ExecStart = "${pkgs.btrbk}/bin/btrbk run";
                 };
+                # Ensure BackupDisk is mounted before running
+                after = [ "media-BackupDisk.mount" ];
+                wants = [ "media-BackupDisk.mount" ];
               };
 
               # btrbk systemd timer (daily at 2am)
@@ -391,31 +408,6 @@
                 timerConfig = {
                   OnCalendar = "*-*-* 02:00:00";
                   Persistent = true;
-                };
-              };
-
-              # backups/snapshots with btrfs
-              services.snapper = {
-                configs = {
-                  root = {
-                    SUBVOLUME = "/";
-                    ALLOW_USERS = [ "haitv" ];
-                    TIMELINE_CREATE = true;
-                    TIMELINE_CLEANUP = true;
-                    TIMELINE_MIN_AGE = "86400s"; # 24 hours
-                    TIMELINE_LIMIT_DAILY = 7;
-                    TIMELINE_LIMIT_WEEKLY = 1;
-                  };
-                  home = {
-                    SUBVOLUME = "/home";
-                    ALLOW_USERS = [ "haitv" ];
-                    TIMELINE_CREATE = true;
-                    TIMELINE_CLEANUP = true;
-                    TIMELINE_MIN_AGE = "86400s"; # 24 hours
-                    TIMELINE_LIMIT_DAILY = 7;
-                    TIMELINE_LIMIT_WEEKLY = 3;
-                    TIMELINE_LIMIT_MONTHLY = 1;
-                  };
                 };
               };
             }
