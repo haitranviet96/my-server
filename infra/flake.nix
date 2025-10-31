@@ -195,6 +195,7 @@
                 mc
                 python3
                 bash
+                btrbk
               ];
 
               # containers (Podman or Docker)
@@ -353,6 +354,44 @@
                 automatic = true;
                 dates = "weekly";
                 options = "--delete-older-than 14d";
+              };
+
+              # btrbk incremental backups - config file
+              environment.etc."btrbk/btrbk.conf".text = ''
+                snapshot_preserve_min latest
+                snapshot_preserve 7d
+                stream_compress zstd
+
+                volume /media/Data
+                  snapshot_dir .snapshots
+                  snapshot_create always
+
+                  target /media/BackupDisk/btrbk
+                    target_preserve 7d 3w 3m
+
+                  subvolume @archived
+                    snapshot_name archived
+
+                  subvolume @mydata
+                    snapshot_name mydata
+              '';
+
+              # btrbk systemd service (runs once)
+              systemd.services.btrbk = {
+                description = "Incremental btrfs backups";
+                serviceConfig = {
+                  Type = "oneshot";
+                  ExecStart = "${pkgs.btrbk}/bin/btrbk run";
+                };
+              };
+
+              # btrbk systemd timer (daily at 2am)
+              systemd.timers.btrbk = {
+                wantedBy = [ "timers.target" ];
+                timerConfig = {
+                  OnCalendar = "*-*-* 02:00:00";
+                  Persistent = true;
+                };
               };
 
               # backups/snapshots with btrfs
