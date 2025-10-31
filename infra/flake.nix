@@ -197,6 +197,7 @@
                 bash
                 btrbk
                 tmux
+                iotop
               ];
 
               # containers (Podman or Docker)
@@ -373,7 +374,7 @@
                 volume /home
                   snapshot_dir .snapshots
                   snapshot_create always
-                  target /media/BackupDisk/btrbk/home
+                  target /media/BackupDisk/@home
                     target_preserve 7d 3w 1m
                   subvolume /home
                     snapshot_name home
@@ -382,7 +383,7 @@
                 volume /media/Data
                   snapshot_dir .snapshots
                   snapshot_create always
-                  target /media/BackupDisk/btrbk/data
+                  target /media/BackupDisk/@data
                     target_preserve 7d 3w 3m
                   subvolume /media/Data/@archived
                     snapshot_name archived
