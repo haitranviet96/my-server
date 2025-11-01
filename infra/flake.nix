@@ -74,6 +74,9 @@
               # Assemble Intel IMSM (fake RAID) via mdadm at boot. NixOS exposes this via boot.swraid.
               boot.swraid.enable = true;
 
+              # Enable kernel config for iotop
+              boot.kernelParams = [ "delayacct" ];
+
               # Filesystems
               fileSystems."/media/BackupDisk" = {
                 device = "UUID=db7abc45-ab91-4f5f-8fc8-05e283b3952e";
@@ -197,7 +200,6 @@
                 bash
                 btrbk
                 tmux
-                iotop
               ];
 
               # containers (Podman or Docker)
@@ -216,6 +218,40 @@
                     ${pkgs.docker}/bin/docker network create --driver bridge --ipv6 webserver || true
                     ${pkgs.docker}/bin/docker network create --driver bridge --ipv6 tools || true
                   '';
+                };
+              };
+
+              # Docker autostart - start all containers at boot
+              systemd.services.docker-autostart = {
+                description = "Start all Docker containers at boot";
+                wantedBy = [ "multi-user.target" ];
+                after = [ "docker.service" ];
+                requires = [ "docker.service" ];
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                  ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.docker}/bin/docker start $(${pkgs.docker}/bin/docker ps -aq) || true'";
+                };
+              };
+
+              # Docker autostop - stop all containers on shutdown/reboot
+              systemd.services.docker-autostop = {
+                description = "Stop all Docker containers on shutdown or reboot";
+                wantedBy = [
+                  "halt.target"
+                  "reboot.target"
+                  "shutdown.target"
+                ];
+                before = [
+                  "shutdown.target"
+                  "reboot.target"
+                  "halt.target"
+                ];
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                  ExecStart = "${pkgs.coreutils}/bin/true";
+                  ExecStop = "${pkgs.bash}/bin/bash -c '${pkgs.docker}/bin/docker stop $(${pkgs.docker}/bin/docker ps -q) || true'";
                 };
               };
 
@@ -240,6 +276,9 @@
 
               # Enable nix-ld for FHS compatibility
               programs.nix-ld.enable = true;
+
+              # iotop with kernel support
+              programs.iotop.enable = true;
 
               # GPG configuration
               programs.gnupg.agent = {
