@@ -12,14 +12,14 @@
 	}
 }
 
-# *.haivita.dynv6.net {
-# 	tls {
-# 		dns dynv6 {env.DYNV6_API_TOKEN}
-# 	}
-# 	handle {
-# 		respond 404
-# 	}
-# }
+*.haivita.dynv6.net {
+	tls {
+		dns dynv6 {env.DYNV6_API_TOKEN}
+	}
+	handle {
+		respond 404
+	}
+}
 
 *.haivita.top {
 	tls {
@@ -30,7 +30,7 @@
 	}
 }
 
-# haivita.dynv6.net,
+haivita.dynv6.net,
 haivita.duckdns.org, haivita.top {
 	reverse_proxy homepage:3000
 }
