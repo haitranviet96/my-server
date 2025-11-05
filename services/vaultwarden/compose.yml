@@ -1,0 +1,23 @@
+name: tools
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    user: 1000:100
+    env_file:
+      - config.env
+      - path: .local.env
+        required: false
+    volumes:
+      - /home/haitv/.config/vaultwarden:/data
+    ports:
+      - 80
+    restart: unless-stopped
+    networks:
+      - tools
+
+networks:
+  tools:
+    name: tools
+    external: true
