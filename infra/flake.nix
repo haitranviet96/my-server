@@ -411,6 +411,14 @@
                               sops
                               rsync
                               openssh
+                              # Essential system tools for NixOS workflows
+                              gawk
+                              coreutils
+                              util-linux
+                              sudo
+                              nixos-rebuild
+                              git
+                              nix
                             ];
 
                             serviceOverrides = {
