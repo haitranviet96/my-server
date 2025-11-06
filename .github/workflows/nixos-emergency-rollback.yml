@@ -1,0 +1,73 @@
+name: NixOS Emergency Rollback
+
+run-name: ${{ github.actor }} is performing emergency rollback 🚨
+
+on:
+  workflow_dispatch:
+    inputs:
+      generation:
+        description: 'Generation number to rollback to (leave empty for previous)'
+        required: false
+        type: string
+      confirm:
+        description: 'Type "ROLLBACK" to confirm this action'
+        required: true
+        type: string
+
+jobs:
+  emergency-rollback:
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - name: Validate confirmation
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirm }}" != "ROLLBACK" ]; then
+            echo "❌ Emergency rollback not confirmed. You must type 'ROLLBACK' to proceed."
+            exit 1
+          fi
+          echo "✅ Emergency rollback confirmed"
+
+      - name: Show current system state
+        shell: bash
+        run: |
+          echo "🔍 Current system state before rollback:"
+          echo "Current generation:"
+          sudo nixos-rebuild list-generations | head -1
+          echo ""
+          echo "Available generations:"
+          sudo nixos-rebuild list-generations | head -10
+          echo ""
+
+      - name: Perform rollback
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.generation }}" ]; then
+            echo "🔄 Rolling back to generation ${{ inputs.generation }}..."
+            sudo nixos-rebuild switch --switch-generation ${{ inputs.generation }}
+          else
+            echo "🔄 Rolling back to previous generation..."
+            sudo nixos-rebuild switch --rollback
+          fi
+
+      - name: Verify rollback
+        shell: bash
+        run: |
+          echo "✅ Rollback completed. New system state:"
+          echo "Active generation:"
+          sudo nixos-rebuild list-generations | head -1
+          echo ""
+          
+          echo "🔍 Checking critical services..."
+          systemctl is-active sshd
+          systemctl is-active docker
+          systemctl is-active tailscaled
+          
+          echo ""
+          echo "🔍 Checking for failed services..."
+          systemctl --failed --no-pager || echo "No failed services"
+          
+          echo ""
+          echo "🚨 EMERGENCY ROLLBACK COMPLETED"
+          echo "⚠️  Remember to investigate the issue that caused the rollback"
+          echo "⚠️  Consider fixing the configuration before the next deployment"
