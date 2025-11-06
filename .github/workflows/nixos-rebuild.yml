@@ -31,6 +31,11 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Setup NixOS environment
+        shell: bash
+        run: |
+          ./.github/scripts/setup-nixos-env.sh
+
       - name: Store current generation info
         id: current_gen
         shell: bash
@@ -86,7 +91,7 @@ jobs:
         run: |
           echo "🧪 Testing new configuration..."
           cd infra
-          nixos-rebuild test --flake .#myserver
+          sudo nixos-rebuild test --flake .#myserver
 
       - name: Switch to new configuration
         if: ${{ inputs.rollback != true }}

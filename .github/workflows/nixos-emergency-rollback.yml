@@ -19,6 +19,14 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 10
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup NixOS environment
+        shell: bash
+        run: |
+          ./.github/scripts/setup-nixos-env.sh
+
       - name: Validate confirmation
         shell: bash
         run: |

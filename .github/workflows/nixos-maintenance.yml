@@ -30,6 +30,11 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Setup NixOS environment
+        shell: bash
+        run: |
+          ./.github/scripts/setup-nixos-env.sh
+
       - name: Update flake inputs
         if: ${{ inputs.operation == 'update-flake' }}
         shell: bash
