@@ -435,9 +435,14 @@
                               MemoryMax = "6G";
                               CPUQuota = "300%";
 
-                              # Security - Allow sudo for NixOS rebuilds
-                              # Must force disable NoNewPrivileges to allow sudo
+                              # Security - Relaxed for NixOS rebuilds that need sudo
+                              # Must force override these to allow sudo to work
                               NoNewPrivileges = pkgs.lib.mkForce false;
+                              PrivateUsers = pkgs.lib.mkForce false;
+                              RestrictSUIDSGID = pkgs.lib.mkForce false;
+                              DynamicUser = pkgs.lib.mkForce false;
+                              
+                              # Keep some security features
                               PrivateTmp = true;
                             };
                           };
