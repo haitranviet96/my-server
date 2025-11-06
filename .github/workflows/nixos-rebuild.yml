@@ -36,12 +36,16 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add server to known hosts
+      - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H haivita.top >> ~/.ssh/known_hosts
+          cat >> ~/.ssh/config <<EOF
+          Host haivita.top
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
 
-      - name: Store current generation info
+      - name: Validate flake configuration
         run: |
           current_gen=$(ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild list-generations | head -1 | awk '{print \$1}'")
           echo "current_generation=$current_gen" >> $GITHUB_OUTPUT
