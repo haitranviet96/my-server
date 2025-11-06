@@ -435,8 +435,9 @@
                               MemoryMax = "6G";
                               CPUQuota = "300%";
 
-                              # Security
-                              NoNewPrivileges = true;
+                              # Security - Allow sudo for NixOS rebuilds
+                              # NoNewPrivileges must be false to allow sudo
+                              NoNewPrivileges = false;
                               PrivateTmp = true;
                             };
                           };
@@ -458,6 +459,31 @@
                 extraGroups = [ "docker" ];
               };
               users.groups.github-runner = { };
+
+              # Allow github-runner to use sudo for NixOS operations
+              security.sudo.extraRules = [
+                {
+                  users = [ "github-runner" ];
+                  commands = [
+                    {
+                      command = "${pkgs.nixos-rebuild}/bin/nixos-rebuild";
+                      options = [ "NOPASSWD" ];
+                    }
+                    {
+                      command = "${pkgs.nix}/bin/nix-collect-garbage";
+                      options = [ "NOPASSWD" ];
+                    }
+                    {
+                      command = "${pkgs.nix}/bin/nix-env";
+                      options = [ "NOPASSWD" ];
+                    }
+                    {
+                      command = "${pkgs.systemd}/bin/systemctl";
+                      options = [ "NOPASSWD" ];
+                    }
+                  ];
+                }
+              ];
 
               # housekeeping
               nix.gc = {
