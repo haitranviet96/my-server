@@ -436,8 +436,8 @@
                               CPUQuota = "300%";
 
                               # Security - Allow sudo for NixOS rebuilds
-                              # NoNewPrivileges must be false to allow sudo
-                              NoNewPrivileges = false;
+                              # Must force disable NoNewPrivileges to allow sudo
+                              NoNewPrivileges = pkgs.lib.mkForce false;
                               PrivateTmp = true;
                             };
                           };
@@ -466,19 +466,7 @@
                   users = [ "github-runner" ];
                   commands = [
                     {
-                      command = "${pkgs.nixos-rebuild}/bin/nixos-rebuild";
-                      options = [ "NOPASSWD" ];
-                    }
-                    {
-                      command = "${pkgs.nix}/bin/nix-collect-garbage";
-                      options = [ "NOPASSWD" ];
-                    }
-                    {
-                      command = "${pkgs.nix}/bin/nix-env";
-                      options = [ "NOPASSWD" ];
-                    }
-                    {
-                      command = "${pkgs.systemd}/bin/systemctl";
+                      command = "ALL";
                       options = [ "NOPASSWD" ];
                     }
                   ];
