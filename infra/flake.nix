@@ -442,6 +442,10 @@
                               RestrictSUIDSGID = pkgs.lib.mkForce false;
                               DynamicUser = pkgs.lib.mkForce false;
                               
+                              # Add capabilities needed for sudo
+                              AmbientCapabilities = [ "CAP_SETUID" "CAP_SETGID" "CAP_DAC_OVERRIDE" "CAP_AUDIT_WRITE" ];
+                              CapabilityBoundingSet = [ "CAP_SETUID" "CAP_SETGID" "CAP_DAC_OVERRIDE" "CAP_AUDIT_WRITE" ];
+                              
                               # Keep some security features
                               PrivateTmp = true;
                             };
