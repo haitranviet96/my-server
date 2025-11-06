@@ -25,146 +25,113 @@ on:
 
 jobs:
   nixos-rebuild:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Setup NixOS environment
-        shell: bash
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
         run: |
-          ./.github/scripts/setup-nixos-env.sh
+          mkdir -p ~/.ssh
+          ssh-keyscan -H haivita.top >> ~/.ssh/known_hosts
 
       - name: Store current generation info
-        id: current_gen
-        shell: bash
         run: |
-          current_gen=$(sudo nixos-rebuild list-generations | head -1 | awk '{print $1}')
+          current_gen=$(ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild list-generations | head -1 | awk '{print \$1}'")
           echo "current_generation=$current_gen" >> $GITHUB_OUTPUT
           echo "Current generation: $current_gen"
+        id: current_gen
 
       - name: Rollback to previous generation
         if: ${{ inputs.rollback == true }}
-        shell: bash
         run: |
           echo "🔄 Rolling back to previous generation..."
-          sudo nixos-rebuild switch --rollback
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild switch --rollback"
           echo "✅ Rollback completed"
           exit 0
 
       - name: Validate flake.nix syntax
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🔍 Validating flake.nix syntax..."
-          cd infra
-          nix flake check --no-build
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "nix flake check --no-build github:haitranviet96/my-server/${{ github.sha }}#nixosConfigurations.myserver"
 
       - name: Show flake info
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "📋 Showing flake configuration..."
-          cd infra
-          nix flake show
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "nix flake show github:haitranviet96/my-server/${{ github.sha }}"
 
       - name: Build NixOS configuration (dry-run)
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🧪 Performing dry-run build..."
-          cd infra
-          nixos-rebuild dry-build --flake .#myserver
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "nixos-rebuild dry-build --flake github:haitranviet96/my-server/${{ github.sha }}#myserver"
 
       - name: Build NixOS configuration
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🔨 Building NixOS configuration..."
-          cd infra
-          nixos-rebuild build --flake .#myserver
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "nixos-rebuild build --flake github:haitranviet96/my-server/${{ github.sha }}#myserver"
 
       - name: Test configuration before switch
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🧪 Testing new configuration..."
-          cd infra
-          sudo nixos-rebuild test --flake .#myserver
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild test --flake github:haitranviet96/my-server/${{ github.sha }}#myserver"
 
       - name: Switch to new configuration
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🔄 Switching to new configuration..."
-          cd infra
-          sudo nixos-rebuild switch --flake .#myserver
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild switch --flake github:haitranviet96/my-server/${{ github.sha }}#myserver"
 
       - name: Verify critical services are running
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🔍 Verifying critical services..."
-          
-          # Check SSH is still working (we're connected via it)
-          systemctl is-active sshd
-          
-          # Check Docker is running
-          systemctl is-active docker
-          
-          # Check Tailscale is running
-          systemctl is-active tailscaled
-          
-          # Check if we can still reach the network
-          ping -c 1 8.8.8.8 || echo "⚠️ Network connectivity issue detected"
-          
-          echo "✅ Critical services verification completed"
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            systemctl is-active sshd &&
+            systemctl is-active docker &&
+            systemctl is-active tailscaled &&
+            echo '✅ Critical services verification completed'
+          "
 
       - name: Check system status
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "📊 System status after rebuild:"
-          systemctl --failed --no-pager
-          echo ""
-          echo "Recent journal entries:"
-          journalctl --no-pager --lines=20 --since="5 minutes ago"
-          echo "✅ NixOS system rebuild completed successfully"
-
-      - name: Update flake lock file
-        if: ${{ inputs.rollback != true }}
-        shell: bash
-        run: |
-          cd infra
-          nix flake update
-          if git diff --exit-code flake.lock; then
-            echo "📌 No flake.lock changes needed"
-          else
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git add flake.lock
-            git commit -m "chore: update flake.lock after successful rebuild"
-            git push || echo "⚠️ Could not push flake.lock update"
-          fi
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            systemctl --failed --no-pager
+            echo ''
+            echo 'Recent journal entries:'
+            journalctl --no-pager --lines=20 --since='5 minutes ago'
+            echo '✅ NixOS system rebuild completed successfully'
+          "
 
       - name: Cleanup old generations
         if: ${{ inputs.rollback != true }}
-        shell: bash
         run: |
           echo "🧹 Cleaning up old generations (keeping last 5)..."
-          sudo nix-collect-garbage --delete-older-than 14d
-          echo ""
-          echo "Available generations:"
-          sudo nixos-rebuild list-generations | head -10
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            sudo nix-collect-garbage --delete-older-than 14d
+            echo ''
+            echo 'Available generations:'
+            sudo nixos-rebuild list-generations | head -10
+          "
 
       - name: Create recovery instructions
         if: failure() && inputs.rollback != true
-        shell: bash
         run: |
           echo "🚨 Build failed! Recovery instructions:"
           echo ""
-          echo "To rollback manually, run:"
+          echo "To rollback manually, SSH into the server and run:"
           echo "  sudo nixos-rebuild switch --rollback"
           echo ""
           echo "Or trigger rollback via GitHub Actions:"

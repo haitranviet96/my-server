@@ -24,135 +24,139 @@ on:
 
 jobs:
   maintenance:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Setup NixOS environment
-        shell: bash
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
         run: |
-          ./.github/scripts/setup-nixos-env.sh
+          mkdir -p ~/.ssh
+          ssh-keyscan -H haivita.top >> ~/.ssh/known_hosts
 
       - name: Update flake inputs
         if: ${{ inputs.operation == 'update-flake' }}
-        shell: bash
         run: |
           echo "🔄 Updating flake inputs..."
-          cd infra
-          nix flake update
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            cd ~/my-server/infra &&
+            nix flake update &&
+            git diff flake.lock
+          "
           
-          echo "📋 Updated inputs:"
-          git diff flake.lock
-          
-          if ! git diff --exit-code flake.lock; then
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git add flake.lock
-            git commit -m "chore: update flake inputs"
-            git push
-            echo "✅ Flake inputs updated and committed"
-          else
-            echo "📌 No updates available"
-          fi
+          echo "📋 Committing and pushing updated flake.lock..."
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            cd ~/my-server &&
+            if ! git diff --exit-code infra/flake.lock; then
+              git config user.name 'GitHub Actions' &&
+              git config user.email 'actions@github.com' &&
+              git add infra/flake.lock &&
+              git commit -m 'chore: update flake inputs' &&
+              git push &&
+              echo '✅ Flake inputs updated and committed'
+            else
+              echo '📌 No updates available'
+            fi
+          "
 
       - name: Cleanup old generations
         if: ${{ inputs.operation == 'cleanup-generations' }}
-        shell: bash
         run: |
           echo "🧹 Cleaning up old NixOS generations..."
-          echo "Current generations:"
-          sudo nixos-rebuild list-generations
-          echo ""
-          
-          # Keep specified number of generations
-          sudo nix-env --delete-generations +${{ inputs.keep_generations }} --profile /nix/var/nix/profiles/system
-          sudo nix-collect-garbage -d
-          
-          echo ""
-          echo "Remaining generations:"
-          sudo nixos-rebuild list-generations
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            echo 'Current generations:' &&
+            sudo nixos-rebuild list-generations &&
+            echo '' &&
+            sudo nix-env --delete-generations +${{ inputs.keep_generations }} --profile /nix/var/nix/profiles/system &&
+            sudo nix-collect-garbage -d &&
+            echo '' &&
+            echo 'Remaining generations:' &&
+            sudo nixos-rebuild list-generations
+          "
 
       - name: Rebuild boot configuration
         if: ${{ inputs.operation == 'rebuild-boot' }}
-        shell: bash
         run: |
           echo "🥾 Rebuilding boot configuration..."
-          cd infra
-          sudo nixos-rebuild boot --flake .#myserver
-          echo "✅ Boot configuration updated. Reboot required to activate."
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            sudo nixos-rebuild boot --flake github:haitranviet96/my-server/main#myserver &&
+            echo '✅ Boot configuration updated. Reboot required to activate.'
+          "
 
       - name: System health check
         if: ${{ inputs.operation == 'check-health' }}
-        shell: bash
         run: |
           echo "🏥 Performing system health check..."
-          
-          echo "=== System Information ==="
-          uname -a
-          echo ""
-          
-          echo "=== NixOS Version ==="
-          nixos-version
-          echo ""
-          
-          echo "=== Current Generation ==="
-          sudo nixos-rebuild list-generations | head -3
-          echo ""
-          
-          echo "=== Failed Services ==="
-          systemctl --failed --no-pager || echo "No failed services"
-          echo ""
-          
-          echo "=== Disk Usage ==="
-          df -h /
-          df -h /nix/store
-          echo ""
-          
-          echo "=== Memory Usage ==="
-          free -h
-          echo ""
-          
-          echo "=== Docker Status ==="
-          docker system df
-          echo ""
-          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-          echo ""
-          
-          echo "=== Network Status ==="
-          tailscale status --peers=false 2>/dev/null || echo "Tailscale not connected"
-          echo ""
-          
-          echo "=== Recent Critical Logs ==="
-          journalctl --no-pager --priority=err --since="24 hours ago" || echo "No critical errors in last 24h"
-          
-          echo "✅ Health check completed"
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            echo '=== System Information ===' &&
+            uname -a &&
+            echo '' &&
+            
+            echo '=== NixOS Version ===' &&
+            nixos-version &&
+            echo '' &&
+            
+            echo '=== Current Generation ===' &&
+            sudo nixos-rebuild list-generations | head -3 &&
+            echo '' &&
+            
+            echo '=== Failed Services ===' &&
+            systemctl --failed --no-pager || echo 'No failed services' &&
+            echo '' &&
+            
+            echo '=== Disk Usage ===' &&
+            df -h / &&
+            df -h /nix/store &&
+            echo '' &&
+            
+            echo '=== Memory Usage ===' &&
+            free -h &&
+            echo '' &&
+            
+            echo '=== Docker Status ===' &&
+            docker system df &&
+            echo '' &&
+            docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' &&
+            echo '' &&
+            
+            echo '=== Network Status ===' &&
+            tailscale status --peers=false 2>/dev/null || echo 'Tailscale not connected' &&
+            echo '' &&
+            
+            echo '=== Recent Critical Logs ===' &&
+            journalctl --no-pager --priority=err --since='24 hours ago' || echo 'No critical errors in last 24h' &&
+            
+            echo '✅ Health check completed'
+          "
 
       - name: Optimize Nix store
         if: ${{ inputs.operation == 'optimize-store' }}
-        shell: bash
         run: |
           echo "⚡ Optimizing Nix store..."
-          
-          echo "Store size before optimization:"
-          du -sh /nix/store
-          
-          sudo nix-store --gc
-          sudo nix-store --optimize
-          
-          echo ""
-          echo "Store size after optimization:"
-          du -sh /nix/store
-          
-          echo "✅ Store optimization completed"
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            echo 'Store size before optimization:' &&
+            du -sh /nix/store &&
+            sudo nix-store --gc &&
+            sudo nix-store --optimize &&
+            echo '' &&
+            echo 'Store size after optimization:' &&
+            du -sh /nix/store &&
+            echo '✅ Store optimization completed'
+          "
 
       - name: Summary
-        shell: bash
         run: |
           echo "📊 Maintenance operation '${{ inputs.operation }}' completed successfully"
-          echo ""
-          echo "Current system state:"
-          echo "- Generation: $(sudo nixos-rebuild list-generations | head -1)"
-          echo "- Uptime: $(uptime)"
-          echo "- Load: $(cat /proc/loadavg)"
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            echo '' &&
+            echo 'Current system state:' &&
+            echo '- Generation: '$(sudo nixos-rebuild list-generations | head -1) &&
+            echo '- Uptime: '$(uptime) &&
+            echo '- Load: '$(cat /proc/loadavg)
+          "

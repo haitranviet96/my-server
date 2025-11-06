@@ -16,19 +16,20 @@ on:
 
 jobs:
   emergency-rollback:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Setup NixOS environment
-        shell: bash
+      - name: Add server to known hosts
         run: |
-          ./.github/scripts/setup-nixos-env.sh
+          mkdir -p ~/.ssh
+          ssh-keyscan -H haivita.top >> ~/.ssh/known_hosts
 
       - name: Validate confirmation
-        shell: bash
         run: |
           if [ "${{ inputs.confirm }}" != "ROLLBACK" ]; then
             echo "❌ Emergency rollback not confirmed. You must type 'ROLLBACK' to proceed."
@@ -37,43 +38,42 @@ jobs:
           echo "✅ Emergency rollback confirmed"
 
       - name: Show current system state
-        shell: bash
         run: |
           echo "🔍 Current system state before rollback:"
           echo "Current generation:"
-          sudo nixos-rebuild list-generations | head -1
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild list-generations | head -1"
           echo ""
           echo "Available generations:"
-          sudo nixos-rebuild list-generations | head -10
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild list-generations | head -10"
           echo ""
 
       - name: Perform rollback
-        shell: bash
         run: |
           if [ -n "${{ inputs.generation }}" ]; then
             echo "🔄 Rolling back to generation ${{ inputs.generation }}..."
-            sudo nixos-rebuild switch --switch-generation ${{ inputs.generation }}
+            ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild switch --switch-generation ${{ inputs.generation }}"
           else
             echo "🔄 Rolling back to previous generation..."
-            sudo nixos-rebuild switch --rollback
+            ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild switch --rollback"
           fi
 
       - name: Verify rollback
-        shell: bash
         run: |
           echo "✅ Rollback completed. New system state:"
           echo "Active generation:"
-          sudo nixos-rebuild list-generations | head -1
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "sudo nixos-rebuild list-generations | head -1"
           echo ""
           
           echo "🔍 Checking critical services..."
-          systemctl is-active sshd
-          systemctl is-active docker
-          systemctl is-active tailscaled
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "
+            systemctl is-active sshd &&
+            systemctl is-active docker &&
+            systemctl is-active tailscaled
+          "
           
           echo ""
           echo "🔍 Checking for failed services..."
-          systemctl --failed --no-pager || echo "No failed services"
+          ssh ${{ secrets.SSH_USERNAME }}@haivita.top "systemctl --failed --no-pager || echo 'No failed services'"
           
           echo ""
           echo "🚨 EMERGENCY ROLLBACK COMPLETED"

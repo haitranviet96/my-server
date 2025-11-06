@@ -435,22 +435,8 @@
                               MemoryMax = "6G";
                               CPUQuota = "300%";
 
-                              # Security - Relaxed for NixOS rebuilds that need sudo
-                              # Must force override these to allow sudo to work
-                              NoNewPrivileges = pkgs.lib.mkForce false;
-                              PrivateUsers = pkgs.lib.mkForce false;
-                              RestrictSUIDSGID = pkgs.lib.mkForce false;
-                              DynamicUser = pkgs.lib.mkForce false;
-                              
-                              # Allow write access to system directories needed for nix operations
-                              ProtectSystem = pkgs.lib.mkForce false;
-                              ReadWritePaths = [ "/nix/var" "/root" ];
-                              
-                              # Add capabilities needed for sudo
-                              AmbientCapabilities = [ "CAP_SETUID" "CAP_SETGID" "CAP_DAC_OVERRIDE" "CAP_AUDIT_WRITE" ];
-                              CapabilityBoundingSet = [ "CAP_SETUID" "CAP_SETGID" "CAP_DAC_OVERRIDE" "CAP_AUDIT_WRITE" ];
-                              
-                              # Keep some security features
+                              # Security
+                              NoNewPrivileges = true;
                               PrivateTmp = true;
                             };
                           };
@@ -472,19 +458,6 @@
                 extraGroups = [ "docker" ];
               };
               users.groups.github-runner = { };
-
-              # Allow github-runner to use sudo for NixOS operations
-              security.sudo.extraRules = [
-                {
-                  users = [ "github-runner" ];
-                  commands = [
-                    {
-                      command = "ALL";
-                      options = [ "NOPASSWD" ];
-                    }
-                  ];
-                }
-              ];
 
               # housekeeping
               nix.gc = {
