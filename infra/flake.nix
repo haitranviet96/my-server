@@ -411,14 +411,6 @@
                               sops
                               rsync
                               openssh
-                              # Essential system tools for NixOS workflows
-                              gawk
-                              coreutils
-                              util-linux
-                              sudo
-                              nixos-rebuild
-                              git
-                              nix
                             ];
 
                             serviceOverrides = {
@@ -535,11 +527,11 @@
                 wants = [ "media-Data.mount" ];
               };
 
-              # Google Drive backup timer (weekly on Sunday at 3am)
+              # Google Drive backup timer (daily at 3am)
               systemd.timers.gdrive-backup = {
                 wantedBy = [ "timers.target" ];
                 timerConfig = {
-                  OnCalendar = "Sun *-*-* 03:00:00";
+                  OnCalendar = "*-*-* 03:00:00";
                   Persistent = true;
                 };
               };
