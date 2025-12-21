@@ -36,7 +36,7 @@ haivita.duckdns.org, haivita.top {
 }
 
 trade.haivita.top {
-	reverse_proxy freqtrade:8080
+	reverse_proxy nofx-frontend:80
 }
 
 speed.haivita.top {

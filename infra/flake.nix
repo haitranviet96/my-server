@@ -3,10 +3,10 @@
   description = "My Dinh DC";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05"; # pinned channel
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11"; # pinned channel
     disko.url = "github:nix-community/disko";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -41,7 +41,7 @@
                 programs.home-manager.enable = true;
 
                 # Home Manager state version
-                home.stateVersion = "25.05";
+                home.stateVersion = "25.11";
 
                 # Install Node.js and pnpm
                 home.packages = with pkgs; [
@@ -90,17 +90,30 @@
               ...
             }:
             {
-              nix.settings.experimental-features = [
-                "nix-command"
-                "flakes"
-              ];
+              nix.settings = {
+                experimental-features = [
+                  "nix-command"
+                  "flakes"
+                ];
+
+                substituters = [
+                  "https://cache.nixos-cuda.org"
+                ];
+
+                trusted-public-keys = [
+                  "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+                ];
+              };
               time.timeZone = "Asia/Bangkok";
 
               # Allow unfree packages (needed for NVIDIA drivers)
-              nixpkgs.config.allowUnfree = true;
+              nixpkgs.config = {
+                allowUnfree = true;
+                cudaSupport = true;
+              };
 
               # System state version
-              system.stateVersion = "25.05";
+              system.stateVersion = "25.11";
 
               # NVIDIA drivers
               services.xserver.videoDrivers = [ "nvidia" ];
@@ -112,7 +125,9 @@
                 nvidiaSettings = false; # Set to false for headless server
 
                 # Enable NVIDIA Power Management (for newer GPUs)
-                powerManagement.finegrained = false;
+                powerManagement.enable = true;
+
+                nvidiaPersistenced = true;
 
                 # Use open source kernel module (recommended for RTX/GTX 16xx and newer)
                 # Set to false if you have older GPUs or encounter issues
@@ -136,7 +151,15 @@
               boot.swraid.enable = true;
 
               # Enable kernel config for iotop
-              boot.kernelParams = [ "delayacct" ];
+              boot.kernelParams = [
+                "delayacct"
+                "nomodeset"
+                "video=efifb:off"
+                "video=vesafb:off"
+                "nvidia_drm.modeset=0"
+                "pcie_aspm=force"
+                "pcie_port_pm=on"
+              ];
 
               # Filesystems
               fileSystems."/media/BackupDisk" = {
@@ -234,6 +257,7 @@
                   22
                   80
                   443
+                  5201  # iperf3
                   61208 # glances HTTP
                   19999 # netdata default port
                 ];
@@ -324,20 +348,14 @@
                   package = pkgs.qemu_kvm;
                   runAsRoot = true;
                   swtpm.enable = true;
-                  ovmf = {
-                    enable = true;
-                    packages = [
-                      (pkgs.OVMF.override {
-                        secureBoot = true;
-                        tpmSupport = true;
-                      }).fd
-                    ];
-                  };
                 };
               };
 
               # Enable nix-ld for FHS compatibility
               programs.nix-ld.enable = true;
+
+              # Enable envfs for better environment compatibility
+              services.envfs.enable = true;
 
               # iotop with kernel support
               programs.iotop.enable = true;
