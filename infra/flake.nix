@@ -141,6 +141,25 @@
                 enable32Bit = true;
               };
 
+              # GPU passthrough (single GPU) via VFIO: bind NVIDIA GPU early
+              # Disable host NVIDIA/Nouveau drivers; bind GPU to vfio-pci in initrd
+              # boot.blacklistedKernelModules = [
+              #   "nouveau"
+              #   "nvidia"
+              #   "nvidia_drm"
+              #   "nvidia_modeset"
+              #   "nvidia_uvm"
+              # ];
+              # boot.initrd.kernelModules = [
+              #   "vfio_pci"
+              #   "vfio"
+              #   "vfio_iommu_type1"
+              # ];
+              # Map PCI IDs of GPU + audio (RTX 2060 12GB: 10de:1f03, audio: 10de:10f9)
+              # and keep firmware framebuffers from grabbing the device
+              # Note: keep existing fb disabling params below
+              # Host will not have NVIDIA acceleration once passed through
+
               # Console-only system (no GUI)
               services.xserver.enable = false;
 
@@ -159,6 +178,12 @@
                 "nvidia_drm.modeset=0"
                 "pcie_aspm=force"
                 "pcie_port_pm=on"
+                # IOMMU + VFIO early binding for single-GPU passthrough (Intel platform)
+                # "intel_iommu=on"
+                # "iommu=pt"
+                # "vfio-pci.ids=10de:1f03,10de:10f9"
+                # "vfio-pci.disable_vga=1"
+                # "initcall_blacklist=sysfb_init"
               ];
 
               # Filesystems
@@ -286,6 +311,7 @@
                 btrbk
                 tmux
                 rclone
+                stress-ng
               ];
 
               # containers (Podman or Docker)

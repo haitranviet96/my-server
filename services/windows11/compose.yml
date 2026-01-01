@@ -1,0 +1,37 @@
+services:
+  windows:
+    image: dockurr/windows
+    container_name: windows11
+    privileged: true
+
+    environment:
+      VERSION: "win11"
+      RAM_SIZE: "8G"
+      CPU_MODEL: "host"
+      CPU_CORES: "4"
+      DISK_SIZE: "64G"
+
+      # GPU_PCI_IDS: "0000:02:00.0,0000:02:00.1"
+      # GPU_DRIVER: "vfio"
+      # GPU_PRIMARY: "true"
+      # DISPLAY: "none"
+
+      # MACHINE: "q35"
+      # UEFI: "true"
+      # HYPERVISOR: "false"
+
+    devices:
+      - /dev/kvm
+      # - /dev/vfio/vfio
+      # - /dev/vfio/48
+
+    ports:
+      - "8006:8006"
+      - "3389:3389/tcp"
+      - "3389:3389/udp"
+
+    stop_grace_period: 2m
+    restart: unless-stopped
+
+    volumes:
+      - /media/OLDHOME/windows/11:/storage
