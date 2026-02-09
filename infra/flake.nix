@@ -282,7 +282,7 @@
                   22
                   80
                   443
-                  5201  # iperf3
+                  5201 # iperf3
                   61208 # glances HTTP
                   19999 # netdata default port
                 ];
@@ -290,6 +290,12 @@
                 trustedInterfaces = [ "tailscale0" ];
                 allowedUDPPorts = [ config.services.tailscale.port ];
               };
+
+              # Network bridge for VMs
+              networking.useNetworkd = true;
+              networking.bridges.br0.interfaces = [ "eno1" ];
+              networking.interfaces.br0.useDHCP = true;
+              networking.interfaces.eno1.useDHCP = false;
 
               # system packages
               environment.systemPackages = with pkgs; [
@@ -312,6 +318,9 @@
                 tmux
                 rclone
                 stress-ng
+                google-cloud-sdk # AI
+                claude-code # AI
+                virt-manager # virt-install
               ];
 
               # containers (Podman or Docker)

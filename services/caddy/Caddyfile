@@ -135,6 +135,10 @@ log.haivita.top {
 	reverse_proxy dozzle:8080
 }
 
+portainer.haivita.top {
+	reverse_proxy portainer:9000
+}
+
 vault.haivita.top {
 	reverse_proxy vaultwarden:80 {
 		header_up X-Real-IP {remote_host}
