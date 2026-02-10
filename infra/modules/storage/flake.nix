@@ -49,38 +49,7 @@
   };
 
   # btrbk incremental backups
-  environment.etc."btrbk/btrbk.conf".text = ''
-    snapshot_preserve_min latest
-    snapshot_preserve 7d
-    stream_compress zstd
-
-    # Root filesystem: local snapshots only
-    volume /
-      snapshot_dir .snapshots
-      snapshot_create always
-      subvolume /
-        snapshot_name root
-
-    # Home filesystem: local snapshots + external backup
-    volume /home
-      snapshot_dir .snapshots
-      snapshot_create always
-      target /media/BackupDisk/@home
-        target_preserve 7d 3w 1m
-      subvolume /home
-        snapshot_name home
-
-    # Data volume: local snapshots + external backup
-    volume /media/Data
-      snapshot_dir .snapshots
-      snapshot_create always
-      target /media/BackupDisk/@data
-        target_preserve 7d 3w 3m
-      subvolume /media/Data/@archived
-        snapshot_name archived
-      subvolume /media/Data/@mydata
-        snapshot_name mydata
-  '';
+  environment.etc."btrbk/btrbk.conf".source = ./btrbk.conf;
 
   # btrbk systemd service (runs once)
   systemd.services.btrbk = {

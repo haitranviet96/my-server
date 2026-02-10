@@ -32,7 +32,7 @@
 
           # System modules
           ./modules/hardware.nix
-          ./modules/storage.nix
+          ./modules/storage/flake.nix
           ./modules/networking.nix
           ./modules/users.nix
           ./modules/virtualization.nix

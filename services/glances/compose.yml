@@ -14,7 +14,7 @@ services:
       - /home:/Home:ro
       - /media/BackupDisk:/BackupDisk:ro
     environment:
-      - "GLANCES_OPT=-w --password"
+      - "GLANCES_OPT=-w"
     # For nvidia GPUs
     deploy:
       resources:
@@ -26,11 +26,4 @@ services:
               capabilities:
                 - gpu
     restart: unless-stopped
-    secrets:
-      - source: glances_password
-        target: /root/.config/glances/glances.pwd
     network_mode: host
-
-secrets:
-  glances_password:
-    file: /home/haitv/.config/glances/glances_password
