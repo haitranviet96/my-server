@@ -3,10 +3,10 @@
   description = "My Dinh DC";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11"; # pinned channel
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # pinned channel
     disko.url = "github:nix-community/disko";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

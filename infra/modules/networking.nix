@@ -1,5 +1,10 @@
 # Networking configuration: SSH, Tailscale, firewall, network bridge
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   # SSH configuration - key-only authentication
   services.openssh = {
@@ -16,6 +21,22 @@
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "server";
+  };
+
+  # Cloudflared
+  systemd.services.cloudflared = {
+    description = "Cloudflare Tunnel";
+    after = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      EnvironmentFile = "/home/haitv/.cloudflared/token.env";
+      ExecStart = ''
+        ${pkgs.cloudflared}/bin/cloudflared tunnel run --token $TUNNEL_TOKEN'';
+      Restart = "always";
+      RestartSec = "5s";
+      DynamicUser = true;
+    };
   };
 
   # firewall

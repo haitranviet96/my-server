@@ -1,5 +1,10 @@
 # Programs and packages configuration
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   # system packages
   environment.systemPackages = with pkgs; [
@@ -25,6 +30,8 @@
     google-cloud-sdk # AI
     claude-code # AI
     virt-manager # virt-install
+    smartmontools
+    cloudflared
   ];
 
   # Enable nix-ld for FHS compatibility

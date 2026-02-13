@@ -1,155 +1,48 @@
 {
 	admin 0.0.0.0:2019
-}
-
-*.haivita.duckdns.org {
-	tls {
-		dns duckdns {env.DUCKDNS_API_TOKEN}
-	}
-
-	handle {
-		respond 404
+	auto_https off
+	servers {
+		protocols h1 h2 h3
 	}
 }
 
-*.haivita.dynv6.net {
-	tls {
-		dns dynv6 {env.DYNV6_API_TOKEN}
-	}
-	handle {
-		respond 404
-	}
+(hide_server) {
+	header -Server
 }
 
-*.haivita.top {
-	tls {
-		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-	}
-	handle {
-		respond 404
-	}
-}
-
-haivita.dynv6.net,
-haivita.duckdns.org, haivita.top {
-	reverse_proxy homepage:3000
-}
-
-trade.haivita.top {
-	reverse_proxy nofx-frontend:80
-}
-
-speed.haivita.top {
-	reverse_proxy speedtest-tracker:80
-}
-
-blog.haivita.top {
-	reverse_proxy ghost:2368
-}
-
-cz.haivita.top {
+disk.haivita.top:80 {
+	import hide_server
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
-
-	reverse_proxy czkawka:5800
-}
-
-disk.haivita.top {
-	basic_auth {
-		{$caddyfile_auth_user} {$caddyfile_auth_pass}
-	}
-
 	reverse_proxy scrutiny:8080
 }
 
-ddns.haivita.top {
+glances.haivita.top:80 {
+	import hide_server
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
-
-	reverse_proxy ddns-updater:8000
-}
-
-file.haivita.top {
-	reverse_proxy filebrowser:8080
-}
-
-glances.haivita.top {
-	basic_auth {
-		{$caddyfile_auth_user} {$caddyfile_auth_pass}
-	}
-
 	reverse_proxy host.docker.internal:61208
 }
 
-image.haivita.top {
-	reverse_proxy immich_server:2283
-}
-
-jellyfin.haivita.top {
-	reverse_proxy jellyfin:8096
-}
-
-radarr.haivita.top {
-	reverse_proxy radarr:7878
-}
-
-sonarr.haivita.top {
-	reverse_proxy sonarr:8989
-}
-
-bazarr.haivita.top {
-	reverse_proxy bazarr:6767
-}
-
-jellyseerr.haivita.top {
-	reverse_proxy jellyseerr:5055
-}
-
-prowlarr.haivita.top {
-	reverse_proxy prowlarr:9696
-}
-
-home.haivita.top {
-	reverse_proxy homeassistant:8123
-}
-
-qbit.haivita.top {
-	reverse_proxy qbittorrent:8080
-}
-
-chat.haivita.top {
-	reverse_proxy open-webui:8080
-}
-
-up.haivita.top {
-	reverse_proxy uptime-kuma:3001
-}
-
-ollama.haivita.top {
+mon.haivita.top:80 {
+	import hide_server
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
-
-	reverse_proxy ollama:11434
+	reverse_proxy host.docker.internal:19999
 }
 
-log.haivita.top {
-	reverse_proxy dozzle:8080
-}
-
-portainer.haivita.top {
-	reverse_proxy portainer:9000
-}
-
-vault.haivita.top {
+vault.haivita.top:80 {
+	import hide_server
 	reverse_proxy vaultwarden:80 {
 		header_up X-Real-IP {remote_host}
 	}
 }
 
-wud.haivita.top {
+wud.haivita.top:80 {
+	import hide_server
 	reverse_proxy wud:3000 {
 		transport http {
 			dial_timeout 15s
@@ -157,26 +50,44 @@ wud.haivita.top {
 	}
 }
 
-mon.haivita.top {
-	basic_auth {
-		{$caddyfile_auth_user} {$caddyfile_auth_pass}
-	}
+:80 {
+	import hide_server
+	# extract subdomain
+	@sub host *.haivita.top
+	handle @sub {
 
-	reverse_proxy host.docker.internal:19999
-}
-
-cockpit.haivita.top {
-	@auth {
-		not path /cockpit/login
-	}
-
-	basic_auth @auth {
-		{$caddyfile_auth_user} {$caddyfile_auth_pass}
-	}
-
-	reverse_proxy https://host.docker.internal:9090 {
-		transport http {
-			tls_insecure_skip_verify
+		map {host} {upstream} {
+			default					""
+			speed.haivita.top		speedtest-tracker:80
+			blog.haivita.top		ghost:2368
+			file.haivita.top		filebrowser:8080
+			image.haivita.top		immich_server:2283
+			jellyfin.haivita.top	jellyfin:8096
+			radarr.haivita.top		radarr:7878
+			sonarr.haivita.top		sonarr:8989
+			bazarr.haivita.top		bazarr:6767
+			jellyseerr.haivita.top	jellyseerr:5055
+			prowlarr.haivita.top	prowlarr:9696
+			qbit.haivita.top		qbittorrent:8080
+			up.haivita.top			uptime-kuma:3001
+			portainer.haivita.top	portainer:9000
 		}
+
+		@has_upstream `{upstream} != ""`
+		handle @has_upstream {
+			reverse_proxy {upstream}
+		}
+
+		respond "unknown host" 404
+	}
+
+	# root
+	@root host haivita.top
+	handle @root {
+		reverse_proxy homepage:3000
+	}
+
+	handle {
+		respond "unknown host" 404
 	}
 }
