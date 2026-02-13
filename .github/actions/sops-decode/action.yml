@@ -15,7 +15,6 @@ runs:
         GPG_KEY_FILE="/var/lib/github-runner/gpg-key.b64"
         if [[ -f "$GPG_KEY_FILE" ]]; then
           cat "$GPG_KEY_FILE" | base64 -d | gpg --import --quiet --no-tty
-          gpg --list-secret-keys
         else
           echo "Warning: GPG key file not found at $GPG_KEY_FILE, SOPS may fail if decryption is needed"
         fi

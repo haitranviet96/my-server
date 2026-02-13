@@ -13,7 +13,7 @@ services:
       database__connection__password: ${DB_PASSWORD}
       database__connection__database: ${DB_DATABASE_NAME}
       security__staffDeviceVerification: false
-      url: https://blog.haivita.top
+      url: http://blog.haivita.top
     volumes:
       - /home/haitv/.config/ghost/content:/var/lib/ghost/content
     networks:
