@@ -55,22 +55,21 @@ wud.haivita.top:80 {
 	# extract subdomain
 	@sub host *.haivita.top
 	handle @sub {
-
 		map {host} {upstream} {
-			default					""
-			speed.haivita.top		speedtest-tracker:80
-			blog.haivita.top		ghost:2368
-			file.haivita.top		filebrowser:8080
-			image.haivita.top		immich_server:2283
-			jellyfin.haivita.top	jellyfin:8096
-			radarr.haivita.top		radarr:7878
-			sonarr.haivita.top		sonarr:8989
-			bazarr.haivita.top		bazarr:6767
-			jellyseerr.haivita.top	jellyseerr:5055
-			prowlarr.haivita.top	prowlarr:9696
-			qbit.haivita.top		qbittorrent:8080
-			up.haivita.top			uptime-kuma:3001
-			portainer.haivita.top	portainer:9000
+			default ""
+			speed.haivita.top speedtest-tracker:80
+			blog.haivita.top ghost:2368
+			file.haivita.top filebrowser:8080
+			image.haivita.top immich_server:2283
+			jellyfin.haivita.top jellyfin:8096
+			radarr.haivita.top radarr:7878
+			sonarr.haivita.top sonarr:8989
+			bazarr.haivita.top bazarr:6767
+			jellyseerr.haivita.top jellyseerr:5055
+			prowlarr.haivita.top prowlarr:9696
+			qbit.haivita.top qbittorrent:8080
+			up.haivita.top uptime-kuma:3001
+			portainer.haivita.top portainer:9000
 		}
 
 		@has_upstream `{upstream} != ""`

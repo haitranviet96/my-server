@@ -14,7 +14,7 @@
     wget
     dua
     tailscale
-    nixfmt-rfc-style
+    nixfmt
     btop-cuda
     gnupg
     sops
@@ -32,6 +32,7 @@
     virt-manager # virt-install
     smartmontools
     cloudflared
+    caddy
   ];
 
   # Enable nix-ld for FHS compatibility
