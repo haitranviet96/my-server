@@ -9,6 +9,10 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -16,6 +20,7 @@
       nixpkgs,
       disko,
       home-manager,
+      sops-nix,
       ...
     }:
     {
@@ -30,10 +35,14 @@
           home-manager.nixosModules.home-manager
           ./modules/home-haitv.nix
 
+          # Secrets management
+          sops-nix.nixosModules.sops
+
           # System modules
           ./modules/hardware.nix
           ./modules/storage/flake.nix
           ./modules/networking.nix
+          ./modules/webhook/default.nix
           ./modules/users.nix
           ./modules/virtualization.nix
           ./modules/github-runners.nix

@@ -2,7 +2,7 @@ name: webserver
 
 services:
   caddy:
-    image: caddy:latest
+    build: .
     container_name: caddy
     restart: always
     env_file:
@@ -11,6 +11,8 @@ services:
         required: false
     ports:
       - "80:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data

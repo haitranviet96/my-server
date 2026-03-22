@@ -1,62 +1,89 @@
 {
 	admin 0.0.0.0:2019
-	auto_https off
-	servers {
-		protocols h1 h2 h3
+
+	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
+
+	dynamic_dns {
+		provider cloudflare {
+			api_token {$CLOUDFLARE_API_TOKEN}
+		}
+
+		domains {
+			haivita.top *
+			haivita.top @
+		}
+
+		check_interval 15m
+		ttl 15m
+	}
+	log {
+		level DEBUG
 	}
 }
 
-(hide_server) {
+(cloudflare_site) {
 	header -Server
+	tls {
+		dns cloudflare {$CLOUDFLARE_API_TOKEN}
+	}
 }
 
-disk.haivita.top:80 {
-	import hide_server
+disk.haivita.top {
+	import cloudflare_site
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
 	reverse_proxy scrutiny:8080
 }
 
-glances.haivita.top:80 {
-	import hide_server
+glances.haivita.top {
+	import cloudflare_site
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
 	reverse_proxy host.docker.internal:61208
 }
 
-mon.haivita.top:80 {
-	import hide_server
+mon.haivita.top {
+	import cloudflare_site
 	basic_auth {
 		{$caddyfile_auth_user} {$caddyfile_auth_pass}
 	}
 	reverse_proxy host.docker.internal:19999
 }
 
-vault.haivita.top:80 {
-	import hide_server
-	reverse_proxy vaultwarden:80 {
+vault.haivita.top {
+	import cloudflare_site
+	reverse_proxy vaultwarden {
 		header_up X-Real-IP {remote_host}
 	}
 }
 
-wud.haivita.top:80 {
-	import hide_server
-	reverse_proxy wud:3000 {
+frigate.haivita.top {
+	import cloudflare_site
+	reverse_proxy host.docker.internal:8971 {
+		header_up Host {host}
+		header_up X-Real-IP {remote}
+		header_up X-Forwarded-For {remote}
 		transport http {
-			dial_timeout 15s
+			tls_insecure_skip_verify
 		}
 	}
 }
 
-:80 {
-	import hide_server
-	# extract subdomain
+*.haivita.top, haivita.top {
+	import cloudflare_site
+
+	# Root domain logic
+	@root host haivita.top
+	handle @root {
+		reverse_proxy homepage:3000
+	}
+
+	# Subdomain mapping logic
 	@sub host *.haivita.top
 	handle @sub {
 		map {host} {upstream} {
-			default ""
 			speed.haivita.top speedtest-tracker:80
 			blog.haivita.top ghost:2368
 			file.haivita.top filebrowser:8080
@@ -70,23 +97,18 @@ wud.haivita.top:80 {
 			qbit.haivita.top qbittorrent:8080
 			up.haivita.top uptime-kuma:3001
 			portainer.haivita.top portainer:9000
+			wud.haivita.top wud:3000
+			home.haivita.top 192.168.1.144:8123
 		}
 
-		@has_upstream `{upstream} != ""`
+		@has_upstream expression `{upstream} != ""`
 		handle @has_upstream {
 			reverse_proxy {upstream}
 		}
 
-		respond "unknown host" 404
-	}
-
-	# root
-	@root host haivita.top
-	handle @root {
-		reverse_proxy homepage:3000
-	}
-
-	handle {
-		respond "unknown host" 404
+		# Fallback for subdomains not in the map
+		handle {
+			respond "Subdomain not configured" 404
+		}
 	}
 }

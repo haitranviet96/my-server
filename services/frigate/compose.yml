@@ -1,0 +1,40 @@
+
+services:
+  frigate:
+    container_name: frigate
+    restart: unless-stopped
+    stop_grace_period: 30s # allow enough time to shut down the various services
+    image: ghcr.io/blakeblackshear/frigate:stable-tensorrt
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids:
+                - nvidia.com/gpu=all
+              capabilities:
+                - gpu
+
+    shm_size: "256mb"
+
+    volumes:
+      - /home/haitv/.config/frigate:/config
+      - /media/Data/@media/frigate:/media/frigate
+      - /etc/localtime:/etc/localtime:ro
+      - type: tmpfs # 1GB In-memory filesystem for recording segment storage
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+
+    ports:
+      - "5000:5000"
+      - "8554:8554"
+      - "8555:8555/tcp"
+      - "8555:8555/udp"
+      - "8971:8971/tcp"
+      - "8971:8971/udp"
+      - "1984:1984"
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all

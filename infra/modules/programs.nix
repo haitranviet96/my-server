@@ -26,13 +26,17 @@
     btrbk
     tmux
     rclone
-    stress-ng
     google-cloud-sdk # AI
     claude-code # AI
     virt-manager # virt-install
     smartmontools
-    cloudflared
+    # cloudflared
     caddy
+    dig
+    unzip
+    s-tui # power management
+    powertop # power management
+    linuxPackages.turbostat # power management
   ];
 
   # Enable nix-ld for FHS compatibility

@@ -26,7 +26,7 @@ services:
       - path: .local.env
         required: false
     # ports:
-    # - 2283:3001
+    # - 3001:2283
     user: 1000:100
     depends_on:
       - redis

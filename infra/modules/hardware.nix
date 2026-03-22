@@ -1,5 +1,10 @@
 # Hardware configuration: NVIDIA, CUDA, graphics, boot, kernel
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   # Allow unfree packages (needed for NVIDIA drivers)
   nixpkgs.config = {
@@ -64,10 +69,8 @@
   # Enable kernel config for iotop
   boot.kernelParams = [
     "delayacct"
-    "nomodeset"
     "video=efifb:off"
     "video=vesafb:off"
-    "nvidia_drm.modeset=0"
     "pcie_aspm=force"
     "pcie_port_pm=on"
     # IOMMU + VFIO early binding for single-GPU passthrough (Intel platform)
@@ -77,4 +80,19 @@
     # "vfio-pci.disable_vga=1"
     # "initcall_blacklist=sysfb_init"
   ];
+
+  # stablize inferences / reduce power consumption
+  systemd.services.nvidia-lock-gpu-clock = {
+    description = "Lock NVIDIA GPU Clock";
+    wantedBy = [ "multi-user.target" ];
+    after = [
+      "nvidia-persistenced.service"
+      "systemd-modules-load.service"
+    ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "/run/current-system/sw/bin/nvidia-smi -lgc 300,1365";
+    };
+  };
 }
