@@ -16,7 +16,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Deploy NixOS rebuild via SSH
-        uses: appleboy/ssh-action@v1.2.5
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
