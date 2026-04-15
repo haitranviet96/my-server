@@ -22,4 +22,4 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: 
-            sudo nixos-rebuild switch --flake github:haitranviet96/my-server?dir=infra#myserver
+            sudo nixos-rebuild switch --flake "github:haitranviet96/my-server?dir=infra#myserver"
