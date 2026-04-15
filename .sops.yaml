@@ -1,3 +1,7 @@
+keys:
+  - &mydinhdc age1ju0uqd58u594c7l0xazwdezx3ky20frjlqnrryewze6qycur0sgs8as8ec    # mydinhdc
+  - &macbook age127rqg853amy8xsyq39y239kjhctnrf886xg43lwshw2wz6pdg4wsf9j5ms     # macbook
 creation_rules:
-    - age: >-
-        age1ju0uqd58u594c7l0xazwdezx3ky20frjlqnrryewze6qycur0sgs8as8ec
+    - age:
+        - *mydinhdc
+        - *macbook

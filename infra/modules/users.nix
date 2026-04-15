@@ -1,5 +1,10 @@
 # Users configuration: haitv, github-runner
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   # Main user
   users.users.haitv = {
@@ -37,5 +42,26 @@
   # Ensure github-runner token is persisted
   systemd.tmpfiles.rules = [
     "f /var/lib/github-runner/token 0600 github-runner github-runner - "
+  ];
+
+  # Deploy user for remote nixos-rebuild via SSH
+  users.users.deploy = {
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFpBpi50Fn48u210u7Fj6otV6CVeV9FoiRaKdkQoqMSv deploy"
+    ];
+  };
+
+  # Allow deploy user to run nixos-rebuild without password
+  security.sudo.extraRules = [
+    {
+      users = [ "deploy" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
   ];
 }

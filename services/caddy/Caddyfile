@@ -16,9 +16,6 @@
 		check_interval 15m
 		ttl 15m
 	}
-	log {
-		level DEBUG
-	}
 }
 
 (cloudflare_site) {

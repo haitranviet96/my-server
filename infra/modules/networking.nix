@@ -23,30 +23,26 @@
     useRoutingFeatures = "server";
   };
 
-  # Cloudflared
-  systemd.services.cloudflared = {
-    description = "Cloudflare Tunnel";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
+  # # Cloudflared
+  # systemd.services.cloudflared = {
+  #   description = "Cloudflare Tunnel";
+  #   after = [ "network-online.target" ];
+  #   wants = [ "network-online.target" ];
+  #   wantedBy = [ "multi-user.target" ];
 
-    serviceConfig = {
-      EnvironmentFile = "/home/haitv/.cloudflared/token.env";
-      ExecStart = ''
-        ${pkgs.cloudflared}/bin/cloudflared tunnel run --token $TUNNEL_TOKEN'';
-      Restart = "always";
-      RestartSec = "5s";
-      DynamicUser = true;
-    };
-  };
+  #   serviceConfig = {
+  #     ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel run --token-file /home/haitv/.cloudflared/token";
+  #     Restart = "always";
+  #     RestartSec = "5s";
+  #     User = "haitv";
+  #   };
+  # };
 
   # firewall
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [
-      22
-      80
-      443
+      3493 # Add NUT server (upsd)
       5201 # iperf3
       61208 # glances HTTP
       19999 # netdata default port

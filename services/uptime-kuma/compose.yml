@@ -2,7 +2,7 @@ name: webserver
 
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:beta
+    image: louislam/uptime-kuma:2
     container_name: uptime-kuma
     user: 1000:100
     volumes:

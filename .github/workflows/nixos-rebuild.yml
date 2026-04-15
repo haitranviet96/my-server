@@ -1,0 +1,25 @@
+name: NixOS Rebuild
+
+run-name: ${{ github.actor }} is triggering NixOS rebuild
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - infra/**
+      - .github/workflows/nixos-rebuild.yml
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Deploy NixOS rebuild via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: 
+            sudo nixos-rebuild switch --flake github:haitranviet96/my-server?dir=infra#myserver

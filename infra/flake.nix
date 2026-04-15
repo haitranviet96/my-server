@@ -40,9 +40,9 @@
 
           # System modules
           ./modules/hardware.nix
+          ./modules/ups.nix
           ./modules/storage/flake.nix
           ./modules/networking.nix
-          ./modules/webhook/default.nix
           ./modules/users.nix
           ./modules/virtualization.nix
           ./modules/github-runners.nix

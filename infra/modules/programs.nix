@@ -28,6 +28,7 @@
     rclone
     google-cloud-sdk # AI
     claude-code # AI
+    gemini-cli
     virt-manager # virt-install
     smartmontools
     # cloudflared
