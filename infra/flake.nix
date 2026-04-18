@@ -65,6 +65,13 @@
               ];
             };
 
+            swapDevices = [
+              {
+                device = "/var/lib/swapfile";
+                size = 16 * 1024; # 16GB
+              }
+            ];
+
             time.timeZone = "Asia/Bangkok";
 
             # System state version
