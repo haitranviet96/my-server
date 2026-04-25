@@ -25,6 +25,8 @@ services:
       - /etc/os-release:/host/etc/os-release:ro
       - /var/log:/host/var/log:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    devices:
+      - /dev/dri:/dev/dri # Required for hardware rendering & transcoding (VA-API)
     deploy:
       resources:
         reservations:

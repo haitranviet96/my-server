@@ -20,6 +20,7 @@
     sops
     age
     pciutils # for lspci command
+    lsof
     mc
     python3
     bash
@@ -38,6 +39,10 @@
     s-tui # power management
     powertop # power management
     linuxPackages.turbostat # power management
+    rocmPackages.rocm-smi
+    rocmPackages.rocminfo
+    amdgpu_top
+    nvtopPackages.full
   ];
 
   # Enable nix-ld for FHS compatibility

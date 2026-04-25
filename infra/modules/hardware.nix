@@ -12,8 +12,14 @@
     cudaSupport = true;
   };
 
-  # NVIDIA drivers
-  services.xserver.videoDrivers = [ "nvidia" ];
+  # NVIDIA and AMD drivers
+  services.xserver.videoDrivers = [ "amdgpu" "nvidia" ];
+  
+  hardware.amdgpu = {
+    initrd.enable = true;
+    opencl.enable = true;
+  };
+
   hardware.nvidia = {
     # Modesetting is required for most recent NVIDIA GPUs
     modesetting.enable = true;

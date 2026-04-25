@@ -1,5 +1,10 @@
 # Storage configuration: filesystems, btrbk backups, gdrive-backup
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   # Filesystems
   fileSystems."/media/BackupDisk" = {
