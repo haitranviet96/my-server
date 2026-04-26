@@ -2,24 +2,30 @@ name: multimedia
 
 services:
   jellyfin:
-    image: jellyfin/jellyfin:latest
+    image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
-    user: 1000:100
+    env_file:
+      - ../docker.env
     group_add:
-      - "105"
+      - "303" # render
+    environment:
+      - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-amd
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/kfd:/dev/kfd
     volumes:
       - /home/haitv/.config/jellyfin:/config
       - /media/Data/@media/media:/media
       - /home/haitv/.cache/jellyfin:/cache
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: cdi
-              device_ids:
-                - nvidia.com/gpu=all
-              capabilities:
-                - gpu
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: cdi
+    #           device_ids:
+    #             - nvidia.com/gpu=all
+    #           capabilities:
+    #             - gpu
     restart: 'unless-stopped'
     networks:
       - multimedia
