@@ -4,17 +4,15 @@ services:
     container_name: frigate
     restart: unless-stopped
     stop_grace_period: 30s # allow enough time to shut down the various services
-    image: ghcr.io/blakeblackshear/frigate:stable-tensorrt
+    # image: ghcr.io/blakeblackshear/frigate:stable-tensorrt
+    image: ghcr.io/blakeblackshear/frigate:stable-rocm
 
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: cdi
-              device_ids:
-                - nvidia.com/gpu=all
-              capabilities:
-                - gpu
+    devices:
+      - /dev/dri:/dev/dri # Required for hardware rendering & transcoding (VA-API)
+      - /dev/kfd:/dev/kfd # Required for ROCm compute (e.g., machine learning, Ollama)
+
+    environment:
+      HSA_OVERRIDE_GFX_VERSION: "10.0.0"
 
     shm_size: "256mb"
 
@@ -36,5 +34,15 @@ services:
       - "8971:8971/udp"
       - "1984:1984"
 
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+    # For nvidia GPUs
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: cdi
+    #           device_ids:
+    #             - nvidia.com/gpu=all
+    #           capabilities:
+    #             - gpu
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
