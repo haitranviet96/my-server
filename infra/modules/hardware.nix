@@ -44,6 +44,9 @@
     enable32Bit = true;
   };
 
+  # For AMD iGPU
+  hardware.enableRedistributableFirmware = true;
+
   # GPU passthrough (single GPU) via VFIO: bind NVIDIA GPU early
   # Disable host NVIDIA/Nouveau drivers; bind GPU to vfio-pci in initrd
   # boot.blacklistedKernelModules = [

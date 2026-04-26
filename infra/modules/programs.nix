@@ -35,6 +35,7 @@
     # cloudflared
     caddy
     dig
+    nmap
     unzip
     s-tui # power management
     powertop # power management

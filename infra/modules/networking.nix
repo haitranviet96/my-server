@@ -54,7 +54,10 @@
 
   # Network bridge for VMs
   networking.useNetworkd = true;
-  networking.bridges.br0.interfaces = [ "eno1" ];
-  networking.interfaces.br0.useDHCP = true;
-  networking.interfaces.eno1.useDHCP = false;
+  networking.bridges.br0.interfaces = [ "enp4s0" ];
+  networking.interfaces.br0 = {
+    useDHCP = true;
+    macAddress = "9c:6b:00:e5:98:0a";
+  };
+  networking.interfaces.enp4s0.useDHCP = false;
 }

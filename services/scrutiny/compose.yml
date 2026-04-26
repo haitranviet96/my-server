@@ -22,7 +22,7 @@ services:
       - "/dev/sdc"
       - "/dev/sdd"
       - "/dev/sde"
-      # - "/dev/nvme0" # Windows
+      - "/dev/nvme0" # Windows
     restart: unless-stopped
     networks:
       - tools
