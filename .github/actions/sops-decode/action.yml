@@ -1,4 +1,4 @@
-name: Decode Environment files by SOPS 
+name: Decode Environment files by SOPS
 description: 'Decode .env files'
 
 inputs:
@@ -10,17 +10,18 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Import GPG Key from Local File
+    - name: Setup Age Key
       shell: bash
       run: |
-        GPG_KEY_FILE="/var/lib/github-runner/gpg-key.b64"
-        if [[ -f "$GPG_KEY_FILE" ]]; then
-          cat "$GPG_KEY_FILE" | base64 -d | gpg --import --quiet --no-tty
+        AGE_KEY_FILE="/var/lib/github-runner/age-key.txt"
+        if [[ -f "$AGE_KEY_FILE" ]]; then
+          echo "SOPS_AGE_KEY_FILE=$AGE_KEY_FILE" >> "$GITHUB_ENV"
         else
-          echo "Warning: GPG key file not found at $GPG_KEY_FILE, SOPS may fail if decryption is needed"
+          echo "::error::Age key file not found at $AGE_KEY_FILE"
+          exit 1
         fi
 
-    - name: SOPS
-      shell: bash {0}
+    - name: Decrypt with SOPS
+      shell: bash
       run: |
         sops -d -i -- ${{ inputs.filePath }}

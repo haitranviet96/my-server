@@ -1,7 +1,9 @@
 keys:
   - &mydinhdc age1ju0uqd58u594c7l0xazwdezx3ky20frjlqnrryewze6qycur0sgs8as8ec    # mydinhdc
   - &macbook age127rqg853amy8xsyq39y239kjhctnrf886xg43lwshw2wz6pdg4wsf9j5ms     # macbook
+  - &runner age1x3ctzh3kncwpueeh23r3nnn85k2rfdf0a029jgw6ju32kj5dc9qqy2gug5      # github-runner
 creation_rules:
     - age:
         - *mydinhdc
         - *macbook
+        - *runner
