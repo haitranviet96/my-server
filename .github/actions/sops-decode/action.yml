@@ -6,22 +6,16 @@ inputs:
     description: 'The name of the encoded file'
     required: true
     default: '.env'
+  ageKey:
+    description: 'Age private key for SOPS decryption'
+    required: true
 
 runs:
   using: composite
   steps:
-    - name: Setup Age Key
-      shell: bash
-      run: |
-        AGE_KEY_FILE="/var/lib/github-runner/age-key.txt"
-        if [[ -f "$AGE_KEY_FILE" ]]; then
-          echo "SOPS_AGE_KEY_FILE=$AGE_KEY_FILE" >> "$GITHUB_ENV"
-        else
-          echo "::error::Age key file not found at $AGE_KEY_FILE"
-          exit 1
-        fi
-
     - name: Decrypt with SOPS
       shell: bash
+      env:
+        SOPS_AGE_KEY: ${{ inputs.ageKey }}
       run: |
         sops -d -i -- ${{ inputs.filePath }}

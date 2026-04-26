@@ -26,6 +26,7 @@ jobs:
         uses: ./.github/actions/sops-decode
         with:
           filePath: ${{ env.SERVICE_PATH }}/config.env
+          ageKey: ${{ secrets.SOPS_AGE_KEY }}
       
       - name: Deploy
         uses: ./.github/actions/deploy

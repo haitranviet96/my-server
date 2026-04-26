@@ -42,7 +42,6 @@
   # Ensure github-runner token is persisted
   systemd.tmpfiles.rules = [
     "f /var/lib/github-runner/token 0600 github-runner github-runner - "
-    "f /var/lib/github-runner/age-key.txt 0600 github-runner github-runner - "
   ];
 
   # Deploy user for remote nixos-rebuild via SSH
