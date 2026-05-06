@@ -46,6 +46,7 @@
       5201 # iperf3
       61208 # glances HTTP
       19999 # netdata default port
+      5900 # vnc
     ];
     # Allow Tailscale traffic
     trustedInterfaces = [ "tailscale0" ];

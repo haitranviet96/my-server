@@ -21,6 +21,7 @@
     age
     pciutils # for lspci command
     lsof
+    tcpdump
     mc
     python3
     bash
