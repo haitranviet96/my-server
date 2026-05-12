@@ -17,15 +17,6 @@ services:
       - /home/haitv/.config/jellyfin:/config
       - /media/Data/@media/media:/media
       - /home/haitv/.cache/jellyfin:/cache
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: cdi
-    #           device_ids:
-    #             - nvidia.com/gpu=all
-    #           capabilities:
-    #             - gpu
     restart: 'unless-stopped'
     networks:
       - multimedia

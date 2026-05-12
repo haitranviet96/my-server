@@ -1,4 +1,4 @@
-# Hardware configuration: NVIDIA, CUDA, graphics, boot, kernel
+# Hardware configuration: AMD, graphics, boot, kernel
 {
   config,
   pkgs,
@@ -6,7 +6,7 @@
   ...
 }:
 {
-  # NVIDIA and AMD drivers
+  # AMD drivers
   services.xserver.videoDrivers = [ "amdgpu" ];
 
   hardware.amdgpu = {

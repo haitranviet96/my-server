@@ -8,10 +8,8 @@
 {
   # system packages
   environment.systemPackages = with pkgs; [
-    inetutils
     vim
     curl
-    wget
     dua
     tailscale
     nixfmt
@@ -19,8 +17,9 @@
     gnupg
     sops
     age
-    pciutils # for lspci command
-    lsof
+    busybox
+    gptfdisk
+    parted
     nvme-cli
     efibootmgr
     tcpdump
@@ -38,9 +37,7 @@
     caddy
     dig
     nmap
-    unzip
     s-tui # power management
-    powertop # power management
     linuxPackages.turbostat # power management
     rocmPackages.rocm-smi
     rocmPackages.rocminfo

@@ -9,15 +9,6 @@ services:
     image: ollama/ollama
     environment:
       - OLLAMA_DEBUG=1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: cdi
-              device_ids:
-                - nvidia.com/gpu=all
-              capabilities:
-                - gpu
     networks:
       - tools
 

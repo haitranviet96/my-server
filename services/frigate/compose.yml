@@ -4,7 +4,6 @@ services:
     container_name: frigate
     restart: unless-stopped
     stop_grace_period: 30s # allow enough time to shut down the various services
-    # image: ghcr.io/blakeblackshear/frigate:stable-tensorrt
     image: ghcr.io/blakeblackshear/frigate:stable-rocm
 
     devices:
@@ -33,16 +32,3 @@ services:
       - "8971:8971/tcp"
       - "8971:8971/udp"
       - "1984:1984"
-
-    # For nvidia GPUs
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: cdi
-    #           device_ids:
-    #             - nvidia.com/gpu=all
-    #           capabilities:
-    #             - gpu
-    # environment:
-    #   - NVIDIA_VISIBLE_DEVICES=all

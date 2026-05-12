@@ -7,7 +7,7 @@
 }:
 {
   # Filesystems
-  fileSystems."/media/BackupDisk" = {
+  fileSystems."/media/BackupData" = {
     device = "UUID=db7abc45-ab91-4f5f-8fc8-05e283b3952e";
     fsType = "btrfs";
     options = [
@@ -29,27 +29,14 @@
     ];
   };
 
-  fileSystems."/media/OLDROOT" = {
-    device = "UUID=0cd879fd-1962-4ebb-a5ee-687c8462cb7b";
+  fileSystems."/media/BackupSystem" = {
+    device = "UUID=d840202e-d646-420b-997a-196385424912";
     fsType = "btrfs";
     options = [
       "noauto"
       "nofail"
       "x-systemd.automount"
       "compress=zstd"
-      "subvol=@"
-    ];
-  };
-
-  fileSystems."/media/OLDHOME" = {
-    device = "UUID=0cd879fd-1962-4ebb-a5ee-687c8462cb7b";
-    fsType = "btrfs";
-    options = [
-      "noauto"
-      "nofail"
-      "x-systemd.automount"
-      "compress=zstd"
-      "subvol=@home"
     ];
   };
 
@@ -63,9 +50,9 @@
       Type = "oneshot";
       ExecStart = "${pkgs.btrbk}/bin/btrbk run";
     };
-    # Ensure BackupDisk is mounted before running
-    after = [ "media-BackupDisk.mount" ];
-    wants = [ "media-BackupDisk.mount" ];
+    # Ensure Backup disks are mounted before running
+    after = [ "media-BackupData.mount" "media-BackupSystem.mount" ];
+    wants = [ "media-BackupData.mount" "media-BackupSystem.mount" ];
   };
 
   # btrbk systemd timer (daily at 2am)
