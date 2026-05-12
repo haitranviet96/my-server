@@ -15,25 +15,26 @@
     dua
     tailscale
     nixfmt
-    btop-cuda
+    btop-rocm
     gnupg
     sops
     age
     pciutils # for lspci command
     lsof
+    nvme-cli
+    efibootmgr
     tcpdump
     mc
     python3
     bash
     btrbk
+    e2fsprogs # chattr ....
     tmux
     rclone
     google-cloud-sdk # AI
-    claude-code # AI
     gemini-cli
     virt-manager # virt-install
     smartmontools
-    # cloudflared
     caddy
     dig
     nmap
@@ -44,7 +45,7 @@
     rocmPackages.rocm-smi
     rocmPackages.rocminfo
     amdgpu_top
-    nvtopPackages.full
+    nvtopPackages.amd
   ];
 
   # Enable nix-ld for FHS compatibility

@@ -15,15 +15,5 @@ services:
       - /media/BackupDisk:/BackupDisk:ro
     environment:
       - "GLANCES_OPT=-w"
-    # For nvidia GPUs
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: cdi
-              device_ids:
-                - nvidia.com/gpu=all
-              capabilities:
-                - gpu
     restart: unless-stopped
     network_mode: host

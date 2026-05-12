@@ -3,4 +3,8 @@
 **/*.local.env
 **/*.local*.yml
 **/*.development.env
+**/node_modules
+**/pnpm-lock.yaml
+**/yarn.lock
 .history
+**/chromium-config

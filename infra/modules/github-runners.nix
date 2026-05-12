@@ -31,7 +31,6 @@
                   "self-hosted"
                   "ephemeral"
                   "instance-${toString i}"
-                  "cuda"
                 ];
 
                 extraPackages = with pkgs; [
