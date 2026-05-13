@@ -4,14 +4,15 @@ services:
     container_name: frigate
     restart: unless-stopped
     stop_grace_period: 30s # allow enough time to shut down the various services
-    image: ghcr.io/blakeblackshear/frigate:stable-rocm
+    image: ghcr.io/garymathews/frigate:latest-rocm-7.2.3
 
     devices:
       - /dev/dri:/dev/dri # Required for hardware rendering & transcoding (VA-API)
       - /dev/kfd:/dev/kfd # Required for ROCm compute (e.g., machine learning, Ollama)
 
     environment:
-      HSA_OVERRIDE_GFX_VERSION: "10.0.0"
+      - HSA_OVERRIDE_GFX_VERSION=9.0.0
+      - HSA_XNACK=0 # specify for gfx90c
 
     shm_size: "256mb"
 
@@ -22,7 +23,7 @@ services:
       - type: tmpfs # 1GB In-memory filesystem for recording segment storage
         target: /tmp/cache
         tmpfs:
-          size: 1000000000
+          size: 1073741824
 
     ports:
       - "5000:5000"

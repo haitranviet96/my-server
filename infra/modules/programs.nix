@@ -8,8 +8,10 @@
 {
   # system packages
   environment.systemPackages = with pkgs; [
+    inetutils
     vim
     curl
+    wget
     dua
     tailscale
     nixfmt
@@ -17,7 +19,9 @@
     gnupg
     sops
     age
-    busybox
+    pciutils # for lspci command
+    psmisc # fuser
+    lsof
     gptfdisk
     parted
     nvme-cli
@@ -37,12 +41,15 @@
     caddy
     dig
     nmap
+    unzip
     s-tui # power management
+    powertop # power management
     linuxPackages.turbostat # power management
     rocmPackages.rocm-smi
     rocmPackages.rocminfo
     amdgpu_top
     nvtopPackages.amd
+    clinfo
   ];
 
   # Enable nix-ld for FHS compatibility

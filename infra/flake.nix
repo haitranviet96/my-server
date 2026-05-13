@@ -58,7 +58,11 @@
             };
 
             zramSwap.enable = true;
-            boot.kernel.sysctl."vm.swappiness" = 100;
+
+            boot.kernel.sysctl = {
+              "vm.swappiness" = 100;
+              "kernel.task_delayacct" = 1; # Enable Task Delay Accounting for iotop
+            };
 
             time.timeZone = "Asia/Bangkok";
 
