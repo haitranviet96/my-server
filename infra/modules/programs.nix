@@ -34,7 +34,6 @@
     e2fsprogs # chattr ....
     tmux
     rclone
-    google-cloud-sdk # AI
     gemini-cli
     virt-manager # virt-install
     smartmontools

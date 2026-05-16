@@ -13,6 +13,15 @@ services:
     environment:
       - HSA_OVERRIDE_GFX_VERSION=9.0.0
       - HSA_XNACK=0 # specify for gfx90c
+      # Critical for GCN5 APUs to stop memory management crashes
+      - HSA_USE_SVM=0
+      # --- THE MEMORY SAVER TRICKS ---
+      # Disable direct memory access restrictions to allow host memory fallback
+      - HSA_ENABLE_SDMA=0
+      # Force host-to-device memory coherence so APU compute can safely use system RAM chunks
+      - HIP_HOST_COHERENT=1
+      # Prevent ONNX Runtime from aggressively pre-allocating massive memory arenas
+      - ORT_TENSORRT_ENGINE_CACHE_ENABLE=0
 
     shm_size: "256mb"
 

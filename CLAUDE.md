@@ -289,7 +289,6 @@ docker ps | grep github-runner
 
 - **nixpkgs**: nixos-unstable channel for latest packages
 - **disko**: Declarative disk partitioning and formatting
-- **home-manager**: User environment management (integrated with haitv module)
 - **sops-nix**: SOPS integration for secrets management
 
 ## Hardware & Deployment Notes

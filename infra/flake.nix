@@ -5,10 +5,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # pinned channel
     disko.url = "github:nix-community/disko";
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,7 +15,6 @@
     {
       nixpkgs,
       disko,
-      home-manager,
       sops-nix,
       ...
     }:
@@ -30,10 +25,6 @@
           # Disk configuration
           ./disko.nix
           disko.nixosModules.disko
-
-          # Home Manager integration
-          home-manager.nixosModules.home-manager
-          ./modules/home-haitv.nix
 
           # Secrets management
           sops-nix.nixosModules.sops

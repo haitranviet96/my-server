@@ -43,7 +43,6 @@ if [ -n "$LATEST_HOME" ]; then
   echo "Syncing home from snapshot: $LATEST_HOME"
   $RCLONE sync "$LATEST_HOME/haitv" $DRIVE:backups/haitv \
     $RCLONE_OPTS \
-    --exclude ".codex/**" \
     --exclude ".docker/**" \
     --exclude ".dotnet/**" \
     --exclude ".cache/**" \
